@@ -15,8 +15,13 @@ import java.lang.reflect.ParameterizedType
 abstract class BaseVMFragment<VM : ViewModel, DB : ViewBinding> : BaseFragment<DB>() {
 
     protected val viewModel by lazy {
-        ViewModelProvider(this)[getViewModelClass()]
+        if (viewModelFactory == null)
+            ViewModelProvider(this)[getViewModelClass()]
+        else
+            ViewModelProvider(this, viewModelFactory!!)[getViewModelClass()]
     }
+
+    open val viewModelFactory: ViewModelProvider.Factory? = null
 
     // 获得ViewModel的Class
     // class里的泛型没法实化，只能曲线救国

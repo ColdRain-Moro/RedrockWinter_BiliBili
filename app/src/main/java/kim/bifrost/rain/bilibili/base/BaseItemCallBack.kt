@@ -1,11 +1,11 @@
-package kim.bifrost.coldrain.wanandroid.base
+package kim.bifrost.rain.bilibili.base
 
 import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 import kim.bifrost.rain.bilibili.utils.getProperty
 
 /**
- * kim.bifrost.coldrain.wanandroid.base.BaseItemCallBack
+ * kim.bifrost.rain.bilibili.base.BaseItemCallBack
  * WanAndroid
  *
  * @author 寒雨

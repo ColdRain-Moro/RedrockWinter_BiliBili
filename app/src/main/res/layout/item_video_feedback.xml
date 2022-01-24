@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_author"
+        style="@style/circleImageStyle"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_author"
+            tools:text="足艺少女小村酱"
+            android:textColor="@color/textColorPrimary"
+            android:maxLines="1"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            tools:text="1-17"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/textColorPrimary"
+            android:textSize="14sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_content"
+            tools:text="给我个置顶应该没毛病吧"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/textColorTitle"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_thumps_up"
+                android:src="@drawable/ic_thumps_up"
+                android:layout_marginEnd="5dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:tint="@color/textColorPrimary"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_thumps_up"
+                tools:text="50"
+                android:layout_marginEnd="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/iv_dislike"
+                android:src="@drawable/ic_dislike"
+                android:layout_marginEnd="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:tint="@color/textColorPrimary"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/iv_share"
+                android:src="@drawable/ic_share"
+                android:layout_marginEnd="20dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:tint="@color/textColorPrimary"
+                tools:ignore="ContentDescription" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

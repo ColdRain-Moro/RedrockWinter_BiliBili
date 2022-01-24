@@ -1,9 +1,6 @@
 package kim.bifrost.rain.bilibili.model.web
 
-import kim.bifrost.rain.bilibili.model.web.bean.RecommendBean
-import kim.bifrost.rain.bilibili.model.web.bean.VideoInfo
-import kim.bifrost.rain.bilibili.model.web.bean.VideoPlayData
-import kim.bifrost.rain.bilibili.model.web.bean.VideoRecommends
+import kim.bifrost.rain.bilibili.model.web.bean.*
 import kim.bifrost.rain.retrofit.annotation.GET
 import kim.bifrost.rain.retrofit.annotation.Query
 
@@ -79,8 +76,24 @@ interface ApiService {
     @GET("x/web-interface/archive/related")
     suspend fun getVideoRecommends(
         @Query("aid") aid: Int? = null,
-        @Query("bvid") bvid: Int? = null
+        @Query("bvid") bvid: String? = null
     ): VideoRecommends
+
+    /**
+     * 获取视频回复
+     *
+     * @param next 上一页数据中的下一页页码
+     * @param aid avid
+     * @param type 类型，目前作用未知，但为必要参数
+     * @return
+     */
+    @GET("x/v2/reply/main")
+    suspend fun getFeedBack(
+        @Query("next") next: Int,
+        @Query("oid") aid: Int,
+        @Query("type") type: Int = 1,
+        @Query("jsonp") jsonp: String = "jsonp"
+    ): ReplyBean
 
     companion object : ApiService by RetrofitHelper.service
 }

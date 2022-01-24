@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import kim.bifrost.rain.bilibili.base.BaseItemCallBack
 
 /**
  * kim.bifrost.coldrain.wanandroid.base.BasePagingAdapter

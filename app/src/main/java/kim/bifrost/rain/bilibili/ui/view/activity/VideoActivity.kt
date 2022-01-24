@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
+import android.view.MenuItem
 import android.widget.MediaController
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -38,17 +39,26 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
     private val simpleVideoInfo by lazy { App.gson.fromJson(intent.getStringExtra("data"), SimpleVideoInfo::class.java) }
     private val client = OkHttpClient()
 
-    private lateinit var videoInfo: VideoInfo
+    private lateinit var videoInfo: VideoInfo.Data
     private lateinit var videoPlayData: VideoPlayData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = Color.BLACK
+        // Toolbar
+        binding.toolbar.apply {
+            setSupportActionBar(this)
+            supportActionBar?.let {
+                it.setDisplayHomeAsUpEnabled(true)
+                it.title = ""
+            }
+        }
         // 异步加载
         lifecycleScope.launch(Dispatchers.IO) {
-            videoInfo = viewModel.getVideoInfo()
+            videoInfo = if (intent.getStringExtra("data2") == null) viewModel.getVideoInfo()
+                else App.gson.fromJson(intent.getStringExtra("data2"), VideoInfo.Data::class.java)
             withContext(Dispatchers.Main) {
-                binding.vp2Video.adapter = StandardVPAdapter(supportFragmentManager, lifecycle, listOf("简介", "评论")) { d, i ->
+                binding.vp2Video.adapter = StandardVPAdapter(supportFragmentManager, lifecycle, listOf("1", "2")) { _, i ->
                     when (i) {
                         0 -> VideoIntroduceFragment.newInstance(videoInfo)
                         1 -> VideoCommentFragment.newInstance(videoInfo)
@@ -62,13 +72,13 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                     }
                 }.attach()
             }
-            videoPlayData = viewModel.getVideoPlayData(cid = videoInfo.data.cid)
-            Drawable.createFromStream(URL(simpleVideoInfo.pic).openStream(), "image.jpg").apply {
+            videoPlayData = viewModel.getVideoPlayData(cid = videoInfo.cid, bvid = videoInfo.bvid)
+            Drawable.createFromStream(URL(videoInfo.pic).openStream(), "image.jpg").apply {
                 withContext(Dispatchers.Main) {
                     binding.vv.background = this@apply
                 }
                 // 缓存视频
-                val videoTemp = File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), "${videoInfo.data.bvid}.flv")
+                val videoTemp = File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), "${videoInfo.bvid}.flv")
                 if (!videoTemp.exists()) {
                     // 没有缓存过 缓存
                     toastConcurrent("缓存视频中...")
@@ -77,7 +87,7 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                         client.newCall(
                             Request.Builder()
                                 .url(videoPlayData.data.durl[0].url)
-                                .addHeader("referer", "https://www.bilibili.com/video/${videoInfo.data.bvid}")
+                                .addHeader("referer", "https://www.bilibili.com/video/${videoInfo.bvid}")
                                 .build()
                         ).execute().body!!.byteStream().use {
                             fos.write(it.readBytes())
@@ -105,6 +115,13 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
             }
         }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return true
+    }
+
     companion object {
         fun start(context: Context, data: SimpleVideoInfo) {
             val starter = Intent(context, VideoActivity::class.java)
@@ -116,6 +133,19 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
             val starter = Intent(context, VideoActivity::class.java)
                 .putExtra("data", App.gson.toJson(data))
             context.startActivity(starter, bundle)
+        }
+
+        /**
+         * 传入序列化为json的VideoInfo或VideoRecommends.Data
+         * 由于实际结构一致，它们可以被统一反序列化为VideoInfo
+         *
+         * @param context
+         * @param dataStr
+         */
+        fun start(context: Context, dataStr: String) {
+            val starter = Intent(context, VideoActivity::class.java)
+                .putExtra("data2", dataStr)
+            context.startActivity(starter)
         }
     }
 }

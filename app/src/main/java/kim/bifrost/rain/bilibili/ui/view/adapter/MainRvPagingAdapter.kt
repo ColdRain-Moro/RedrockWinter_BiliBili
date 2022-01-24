@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import com.bumptech.glide.Glide
-import kim.bifrost.coldrain.wanandroid.base.BaseItemCallBack
+import kim.bifrost.rain.bilibili.base.BaseItemCallBack
 import kim.bifrost.coldrain.wanandroid.base.BasePagingAdapter
 import kim.bifrost.rain.bilibili.databinding.ItemRecommendBinding
 import kim.bifrost.rain.bilibili.model.web.bean.SimpleVideoInfo

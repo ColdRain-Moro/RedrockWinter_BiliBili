@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import java.text.DateFormat
 
 /**
  * kim.bifrost.rain.bilibili.App

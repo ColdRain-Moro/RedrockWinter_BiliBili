@@ -1,17 +1,26 @@
 package kim.bifrost.rain.bilibili.ui.view.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kim.bifrost.coldrain.wanandroid.base.BaseVMFragment
 import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.databinding.FragmentVideoIntroduceBinding
 import kim.bifrost.rain.bilibili.model.web.bean.SimpleVideoInfo
 import kim.bifrost.rain.bilibili.model.web.bean.VideoInfo
+import kim.bifrost.rain.bilibili.ui.view.adapter.VideoRvAdapter
 import kim.bifrost.rain.bilibili.ui.viewmodel.frag.VideoIntroduceFragViewModel
 import kim.bifrost.rain.bilibili.utils.toNumberFormattedString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.format
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,7 +34,7 @@ import java.util.*
  **/
 class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, FragmentVideoIntroduceBinding>() {
 
-    private val data by lazy { App.gson.fromJson(requireArguments().getString("data"), VideoInfo::class.java) }
+    private val data by lazy { App.gson.fromJson(requireArguments().getString("data"), VideoInfo.Data::class.java) }
     @SuppressLint("SimpleDateFormat")
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
@@ -34,23 +43,32 @@ class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, Fragm
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
             Glide.with(requireContext())
-                .load(data.data.owner.face)
+                .load(data.owner.face)
                 .into(userIcon)
-            up.text = data.data.owner.name
+            up.text = data.owner.name
             // 获取作者信息
-            Log.d("Test", "(VideoIntroduceFragment.kt:40) ==> ${data.data.pubdate}")
-            title.text = data.data.title
-            videoInfo.text = "${data.data.stat.view.toNumberFormattedString()}      ${data.data.stat.reply.toNumberFormattedString()}    ${simpleDateFormat.format(Date(data.data.pubdate * 1000))}       ${data.data.bvid}     未经作者授权禁止转载"
-            simpleIntroduce.text = data.data.desc
-            tvCoin.text = data.data.stat.coin.toNumberFormattedString()
-            tvCollect.text = data.data.stat.favorite.toNumberFormattedString()
-            tvShare.text = data.data.stat.share.toNumberFormattedString()
-            tvThumbsUp.text = data.data.stat.like.toNumberFormattedString()
+            title.text = data.title
+            videoInfo.text = "${data.stat.view.toNumberFormattedString()}      ${data.stat.reply.toNumberFormattedString()}    ${simpleDateFormat.format(Date(data.pubdate * 1000))}       ${data.bvid}     未经作者授权禁止转载"
+            simpleIntroduce.text = data.desc
+            tvCoin.text = data.stat.coin.toNumberFormattedString()
+            tvCollect.text = data.stat.favorite.toNumberFormattedString()
+            tvShare.text = data.stat.share.toNumberFormattedString()
+            tvThumbsUp.text = data.stat.like.toNumberFormattedString()
+            lifecycleScope.launch(Dispatchers.IO) {
+                val list = viewModel.getVideoRecommends(data.bvid).data
+                withContext(Dispatchers.Main) {
+                    rvVideosRecommend.apply {
+                        layoutManager = LinearLayoutManager(requireContext())
+                        adapter = VideoRvAdapter(requireContext(), list)
+                        addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL), Color.LTGRAY)
+                    }
+                }
+            }
         }
     }
 
     companion object {
-        fun newInstance(data: VideoInfo): VideoIntroduceFragment {
+        fun newInstance(data: VideoInfo.Data): VideoIntroduceFragment {
             val args = Bundle()
             args.putString("data", App.gson.toJson(data))
             val fragment = VideoIntroduceFragment()

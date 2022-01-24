@@ -17,7 +17,7 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
 ) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = getColor(R.color.colorPrimary)
+        window.statusBarColor = getColor(R.color.primaryColor)
         binding.vp2Main.apply {
             adapter = StandardVPAdapter(
                 supportFragmentManager,
