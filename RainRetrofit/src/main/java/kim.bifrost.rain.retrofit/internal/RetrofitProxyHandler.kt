@@ -1,6 +1,7 @@
 package kim.bifrost.rain.retrofit.internal
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import kim.bifrost.rain.retrofit.Call
 import kim.bifrost.rain.retrofit.RainRetrofit
@@ -29,7 +30,7 @@ class RetrofitProxyHandler<T>(
     }
 
     @RequiresApi(Build.VERSION_CODES.P)
-    override fun invoke(proxy: Any, method: Method, args: Array<out Any>): Any? {
+    override fun invoke(proxy: Any, method: Method, args: Array<out Any?>): Any? {
         val annotations = method.annotations
         val httpMethod = annotations.firstOrNull { it is GET || it is POST }
             ?: error("unknown http method with method ${method.name}")
@@ -44,7 +45,7 @@ class RetrofitProxyHandler<T>(
                     subUrl = subUrl.replace("{${path.value}}", args[i].toString())
                 }
                 query?.let {
-                    queryParams[it.value] = args[i].toString()
+                    args[i]?.let { s -> queryParams[it.value] = s.toString() }
                 }
             }
             if (queryParams.isNotEmpty()) {
@@ -57,32 +58,35 @@ class RetrofitProxyHandler<T>(
                 }
                 subUrl += builder.toString()
             }
-            return retrofit.baseurl + subUrl
+            return retrofit.baseurl.run { if (endsWith("/")) this else "$this/" } + subUrl
         }
         when(httpMethod) {
             is GET -> {
                 val url = handleUrl(httpMethod.value)
-                if (method.returnType.isAssignableFrom(Call::class.java)) {
-                    val innerClazz = method.returnType.getGenerics()[0].javaClass
-                    return Call(
+                if (Call::class.java.isAssignableFrom(method.returnType)) {
+                    val innerClazz = method.genericReturnType.getGenerics()[0]
+                    return Call<Any>(
                         okhttpCall = retrofit.okHttpClient.newCall(
                             Request.Builder()
                                 .url(url)
                                 .build()
                         ),
-                        clazz = innerClazz,
+                        type = innerClazz,
                         converter = retrofit.converter
                     )
                 }
                 // 协程拓展
                 if (isSuspendMethod(method)) {
-                    return Call(
+                    // 挂起函数编译后返回值类型变为Object，真正的返回值类型要去Continuation的泛型里面拿
+                    // 我真麻了 太阴间了这也
+                    val type = (method.genericParameterTypes.run { get(size - 1) }.getGenerics()[0] as WildcardType).lowerBounds[0]
+                    return Call<Any>(
                         okhttpCall = retrofit.okHttpClient.newCall(
                             Request.Builder()
                                 .url(url)
                                 .build()
                         ),
-                        clazz = method.returnType,
+                        type = type,
                         converter = retrofit.converter
                     ).execute()
                 }
@@ -92,34 +96,34 @@ class RetrofitProxyHandler<T>(
                 if (annotations.any { it is FormUrlEncoded }) {
                     val body = FormBody.Builder().run {
                         params.forEachIndexed { i, annotations ->
-                            val field = annotations.firstOrNull { it -> it is Field } as Field? ?: return@forEachIndexed
+                            val field = annotations.firstOrNull { it is Field } as Field? ?: return@forEachIndexed
                             add(field.value, args[i].toString())
                         }
                         build()
                     }
-                    if (method.returnType.isAssignableFrom(Call::class.java)) {
-                        val innerClazz = method.returnType.getGenerics()[0].javaClass
-                        return Call(
+                    if (Call::class.java.isAssignableFrom(method.returnType)) {
+                        val innerClazz = method.genericReturnType.getGenerics()[0]
+                        return Call<Any>(
                             okhttpCall = retrofit.okHttpClient.newCall(
                                 Request.Builder()
                                     .url(url)
                                     .post(body)
                                     .build()
                             ),
-                            clazz = innerClazz,
+                            type = innerClazz,
                             converter = retrofit.converter
                         )
                     }
                     // 协程拓展
                     if (isSuspendMethod(method)) {
-                        return Call(
+                        return Call<Any>(
                             okhttpCall = retrofit.okHttpClient.newCall(
                                 Request.Builder()
                                     .url(url)
                                     .post(body)
                                     .build()
                             ),
-                            clazz = method.returnType,
+                            type = method.genericReturnType,
                             converter = retrofit.converter
                         ).execute()
                     }
@@ -129,14 +133,14 @@ class RetrofitProxyHandler<T>(
         return null
     }
 
-    private fun Class<*>.getGenerics(): Array<Type> {
+    private fun Type.getGenerics(): Array<Type> {
         return (this as ParameterizedType).actualTypeArguments
     }
 
     // 判断方法是否是挂起函数
     @RequiresApi(Build.VERSION_CODES.P)
     private fun isSuspendMethod(method: Method): Boolean {
-        val last = method.typeParameters.lastOrNull() ?: return false
-        return last.typeName.startsWith("Continuation")
+        val last = method.genericParameterTypes.lastOrNull() ?: return false
+        return last.typeName.startsWith("kotlin.coroutines.Continuation")
     }
 }

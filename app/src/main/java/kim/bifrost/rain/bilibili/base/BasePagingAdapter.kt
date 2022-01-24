@@ -21,7 +21,7 @@ abstract class BasePagingAdapter<DB : ViewBinding, D : Any>(
 
     open val holderInit: Holder<DB>.() -> Unit = {}
 
-    class Holder<DB : ViewBinding>(binding: DB, holderInit: Holder<DB>.() -> Unit) :
+    class Holder<DB : ViewBinding>(val binding: DB, holderInit: Holder<DB>.() -> Unit) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             holderInit(this)

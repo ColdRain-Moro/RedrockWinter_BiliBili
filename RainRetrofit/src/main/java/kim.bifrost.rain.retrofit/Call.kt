@@ -3,6 +3,7 @@ package kim.bifrost.rain.retrofit
 import okhttp3.Callback
 import okhttp3.Response
 import java.io.IOException
+import java.lang.reflect.Type
 import okhttp3.Call as OKHttpCall
 
 /**
@@ -14,11 +15,11 @@ import okhttp3.Call as OKHttpCall
  **/
 class Call<T>(
     private val okhttpCall: OKHttpCall,
-    private val clazz: Class<T>,
+    private val type: Type,
     private val converter: Converter
 ) {
     fun execute(): T {
-        return converter.convert(okhttpCall.execute().body ?: error("null response body"), clazz)
+        return converter.convert(okhttpCall.execute().body ?: error("null response body"), type)
     }
 
     fun enqueue(onSuccess: (T) -> Unit, onFailure: (IOException) -> Unit) {
@@ -28,7 +29,7 @@ class Call<T>(
             }
 
             override fun onResponse(call: okhttp3.Call, response: Response) {
-                onSuccess(converter.convert(response.body ?: error("null response body"), clazz))
+                onSuccess(converter.convert(response.body ?: error("null response body"), type))
             }
         })
     }

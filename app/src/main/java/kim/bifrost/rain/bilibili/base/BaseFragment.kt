@@ -34,8 +34,8 @@ abstract class BaseFragment<T : ViewBinding> : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
     ): T {
-        return ((javaClass as ParameterizedType).actualTypeArguments
-            .first { it is Class<*> && it.isAssignableFrom(ViewBinding::class.java) } as Class<*>)
+        return ((javaClass.genericSuperclass as ParameterizedType).actualTypeArguments
+            .first { it is Class<*> && ViewBinding::class.java.isAssignableFrom(it) } as Class<*>)
             .invokeStatic<T>("inflate", layoutInflater, container, false)!!
     }
 

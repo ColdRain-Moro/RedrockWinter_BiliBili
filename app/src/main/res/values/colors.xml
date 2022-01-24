@@ -8,9 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="colorPrimary">#FFFFFFFF</color>
+    <color name="colorPrimary">#64B5F6</color>
     <color name="colorAccent">#42A5F5</color>
     <color name="textColorPrimary">#757575</color>
     <color name="windowBackground">#E0E0E0</color>
     <color name="colorSecondary">#29B6F6</color>
+
+    <color name="textColorTitle">#FF000000</color>
 </resources>

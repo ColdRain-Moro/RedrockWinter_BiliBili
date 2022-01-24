@@ -58,9 +58,7 @@ abstract class BaseActivity<DB : ViewBinding>(
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
             window.decorView.systemUiVisibility = option
             // 状态栏字体颜色变黑
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or option
-            }
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or option
         }
         // 状态栏设置成透明
         window.statusBarColor = Color.TRANSPARENT

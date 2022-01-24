@@ -1,7 +1,11 @@
 package kim.bifrost.rain.retrofit
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonToken
 import okhttp3.ResponseBody
+import java.lang.reflect.Type
 
 /**
  * kim.bifrost.rain.retrofit.Converter
@@ -12,20 +16,27 @@ import okhttp3.ResponseBody
  * @since 2022/1/16 0:27
  **/
 interface Converter {
-    fun <T> convert(body: ResponseBody, clazz: Class<T>): T
+    fun <T> convert(body: ResponseBody, type: Type): T
 }
 
 class GsonConverter private constructor(
     private val gson: Gson
 ) : Converter {
 
-    override fun <T> convert(body: ResponseBody, clazz: Class<T>): T {
-        return gson.fromJson(body.string(), clazz)
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> convert(body: ResponseBody, type: Type): T {
+        val adapter = gson.getAdapter(TypeToken.get(type))
+        val jsonReader = gson.newJsonReader(body.charStream())
+        val result = adapter.read(jsonReader)
+        if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
+            error("JSON document was not fully consumed.")
+        }
+        return (result as T).also { body.close() }
     }
 
     companion object {
         fun create(): GsonConverter {
-            return GsonConverter(Gson())
+            return GsonConverter(GsonBuilder().create())
         }
 
         fun create(gson: Gson): GsonConverter {
