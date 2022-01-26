@@ -14,12 +14,18 @@
 
 [哔哩哔哩-API收集整理](https://github.com/SocialSisterYi/bilibili-API-collect)
 
+## TODO
+
+- 登录/个人信息部分/登录之后可以进行的操作(一键三连之类) (鉴权)
+- 搜索部分
+
 ## 功能展示
 
 // TODO
 
 ## 技术亮点
 
+- MVVM架构/Paging3/协程
 - Retrofit简单实现
 
 ## 心得体会
@@ -30,7 +36,7 @@
 
 于是我翻阅了很多github项目，自己收集整理了一些API
 
-这里放一些api收集整理里面没有的api，以备不时之需
+自己也在走投无路的情况下学会了浏览器抓包，意外的好使，打开了新世界的大门
 
 原来官方有[开放接口文档](https://openhome.bilibili.com/doc)... 也放在这里吧
 
@@ -39,8 +45,6 @@
 其实我也没想到我写出来的东西会这么漏洞百出
 
 我总结了两个原因: 我个人对java反射API不够熟悉 / Kotlin代码编译为class后的某些东西过于阴间
-
-#### First. Gson序列化对象后获取字段出现异常
 
 > java.lang.ClassCastException: com.google.gson.internal.LinkedTreeMap cannot be cast to xxxxxx
 
@@ -83,3 +87,7 @@
 其实获取到的视频url是不能直接使用的，我用浏览器访问后得到的都是403的结果
 
 后来百度了才知道，是要加上referer表头才能拿到视频流的 (referer的内容就是这个视频的bilibili网页播放地址)
+
+### NestedScrollView & RecyclerView & CoordinatorLayout
+
+非常鬼畜的问题，NestedScrollView使RecyclerView的懒加载失效。我已经描述不出来是什么问题了，真给我整麻了。

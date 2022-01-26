@@ -7,4 +7,7 @@
     <style name="ToolbarTheme">
         <item name="colorControlNormal">@color/white</item>
     </style>
+    <style name="AppAutoCompleteTextView">
+        <item name="android:editTextColor">@color/textColorTitle</item>
+    </style>
 </resources>

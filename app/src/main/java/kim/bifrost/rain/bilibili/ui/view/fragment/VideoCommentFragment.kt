@@ -1,11 +1,13 @@
 package kim.bifrost.rain.bilibili.ui.view.fragment
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kim.bifrost.coldrain.wanandroid.base.BaseVMFragment
 import kim.bifrost.rain.bilibili.App
@@ -43,6 +45,7 @@ class VideoCommentFragment : BaseVMFragment<VideoCommentFragViewModel, FragmentV
         binding.rvReply.apply {
             adapter = replyAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL), Color.LTGRAY)
         }
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.replies.collectLatest {

@@ -11,8 +11,9 @@
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/iv_author"
         style="@style/circleImageStyle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:background="@color/white"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="20dp"/>
 
     <LinearLayout
@@ -25,7 +26,7 @@
             tools:text="足艺少女小村酱"
             android:textColor="@color/textColorPrimary"
             android:maxLines="1"
-            android:textSize="14sp"
+            android:textSize="11sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -34,7 +35,7 @@
             tools:text="1-17"
             android:layout_marginTop="10dp"
             android:textColor="@color/textColorPrimary"
-            android:textSize="14sp"
+            android:textSize="11sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -43,7 +44,7 @@
             tools:text="给我个置顶应该没毛病吧"
             android:layout_marginTop="15dp"
             android:textColor="@color/textColorTitle"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

@@ -96,8 +96,32 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                     toastConcurrent("缓存完成")
                 }
                 withContext(Dispatchers.Main) {
-                    binding.vv.background = null
-                    binding.vv.setVideoPath(videoTemp.path)
+                    binding.vv.apply {
+                        setOnErrorListener { _, _, _ ->
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                videoTemp.delete()
+                                toastConcurrent("缓存视频中")
+                                videoTemp.createNewFile()
+                                FileOutputStream(videoTemp).use { fos ->
+                                    client.newCall(
+                                        Request.Builder()
+                                            .url(videoPlayData.data.durl[0].url)
+                                            .addHeader("referer", "https://www.bilibili.com/video/${videoInfo.bvid}")
+                                            .build()
+                                    ).execute().body!!.byteStream().use {
+                                        fos.write(it.readBytes())
+                                    }
+                                }
+                                toastConcurrent("缓存完成")
+                                withContext(Dispatchers.Main) {
+                                    setVideoPath(videoTemp.path)
+                                }
+                            }
+                            true
+                        }
+                        background = null
+                        setVideoPath(videoTemp.path)
+                    }
                 }
             }
         }

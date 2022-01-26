@@ -42,24 +42,25 @@ class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, Fragm
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.apply {
-            Glide.with(requireContext())
-                .load(data.owner.face)
-                .into(userIcon)
-            up.text = data.owner.name
-            // 获取作者信息
-            title.text = data.title
-            videoInfo.text = "${data.stat.view.toNumberFormattedString()}      ${data.stat.reply.toNumberFormattedString()}    ${simpleDateFormat.format(Date(data.pubdate * 1000))}       ${data.bvid}     未经作者授权禁止转载"
-            simpleIntroduce.text = data.desc
-            tvCoin.text = data.stat.coin.toNumberFormattedString()
-            tvCollect.text = data.stat.favorite.toNumberFormattedString()
-            tvShare.text = data.stat.share.toNumberFormattedString()
-            tvThumbsUp.text = data.stat.like.toNumberFormattedString()
             lifecycleScope.launch(Dispatchers.IO) {
                 val list = viewModel.getVideoRecommends(data.bvid).data
                 withContext(Dispatchers.Main) {
                     rvVideosRecommend.apply {
                         layoutManager = LinearLayoutManager(requireContext())
-                        adapter = VideoRvAdapter(requireContext(), list)
+                        adapter = VideoRvAdapter(requireContext(), list) {
+                            Glide.with(requireContext())
+                                .load(data.owner.face)
+                                .into(userIcon)
+                            up.text = data.owner.name
+                            // 获取作者信息
+                            title.text = data.title
+                            videoInfo.text = "\uD83D\uDCF9 ${data.stat.view.toNumberFormattedString()}      \uD83D\uDCAC ${data.stat.reply.toNumberFormattedString()}    ${simpleDateFormat.format(Date(data.pubdate * 1000))}       ${data.bvid}     未经作者授权禁止转载"
+                            simpleIntroduce.text = data.desc
+                            tvCoin.text = data.stat.coin.toNumberFormattedString()
+                            tvCollect.text = data.stat.favorite.toNumberFormattedString()
+                            tvShare.text = data.stat.share.toNumberFormattedString()
+                            tvThumbsUp.text = data.stat.like.toNumberFormattedString()
+                        }
                         addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL), Color.LTGRAY)
                     }
                 }

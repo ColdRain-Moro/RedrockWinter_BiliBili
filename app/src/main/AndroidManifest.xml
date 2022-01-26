@@ -4,7 +4,8 @@
     package="kim.bifrost.rain.bilibili">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <application
@@ -16,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.BiliBili">
+        <activity
+            android:name=".ui.view.activity.SearchResultActivity"
+            android:exported="true" />
         <activity
             android:name=".ui.view.activity.VideoActivity"
             android:exported="true" />

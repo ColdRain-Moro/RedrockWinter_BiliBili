@@ -27,7 +27,7 @@ interface ApiService {
         @Query("tid") tid: Int? = null,
         @Query("page") page: Int,
         @Query("pagesize") pageSize: Int = 30,
-        @Query("order") order: String = "default"
+        @Query("order") order: String = "default",
     ): RecommendBean
 
     /**
@@ -47,10 +47,10 @@ interface ApiService {
         @Query("avid") avid: Int? = null,
         @Query("bvid") bvid: String? = null,
         @Query("cid") cid: Int,
-        @Query("qn") qn: Int? = 16,
+        @Query("qn") qn: Int? = 32,
         @Query("fnval") fnval: Int? = null,
         @Query("fnver") fnver: Int? = null,
-        @Query("fourk") fourk: Int? = null
+        @Query("fourk") fourk: Int? = null,
     ): VideoPlayData
 
     /**
@@ -76,7 +76,7 @@ interface ApiService {
     @GET("x/web-interface/archive/related")
     suspend fun getVideoRecommends(
         @Query("aid") aid: Int? = null,
-        @Query("bvid") bvid: String? = null
+        @Query("bvid") bvid: String? = null,
     ): VideoRecommends
 
     /**
@@ -92,8 +92,57 @@ interface ApiService {
         @Query("next") next: Int,
         @Query("oid") aid: Int,
         @Query("type") type: Int = 1,
-        @Query("jsonp") jsonp: String = "jsonp"
+        @Query("jsonp") jsonp: String = "jsonp",
     ): ReplyBean
+
+    /**
+     * 分类搜索
+     * https://github.com/SocialSisterYi/bilibili-API-collect/blob/master/search/search_request.md
+     *
+     * @param search_type 搜索目标类型
+     * @param keyword 需要搜索的关键词
+     * @param order 结果排序方式
+     * @param order_sort 用户粉丝数及等级排序顺序
+     * @param user_type 用户分类筛选
+     * @param duration 视频时长筛选
+     * @param tids 视频分区筛选
+     * @param category_id 专栏及相簿分区筛选
+     * @param page 页码
+     * @return
+     */
+    @GET("x/web-interface/search/type")
+    suspend fun search(
+        @Query("search_type") search_type: String = "video",
+        @Query("keyword") keyword: String,
+        @Query("order") order: String = "totalrank",
+        @Query("order_sort") order_sort: Int = 0,
+        @Query("user_type") user_type: Int = 0,
+        @Query("duration") duration: Int = 0,
+        @Query("tids") tids: Int = 0,
+        @Query("category_id") category_id: Int = 0,
+        @Query("page") page: Int = 1,
+    ): VideoSearchResultBean
+
+    /**
+     * 获取搜索建议
+     *
+     * @param term 关键词
+     * @param sponly
+     * @return
+     */
+    @GET("suggest")
+    suspend fun searchSuggest(
+        @Query("term") term: String,
+        @Query("sponly") sponly: Int? = null,
+    ): Map<Int, SearchSuggestion>
+
+    /**
+     * 获取搜索热词
+     *
+     * @return
+     */
+    @GET("http://s.search.bilibili.com/main/hotword")
+    suspend fun hotkey(): HotKeyBean
 
     companion object : ApiService by RetrofitHelper.service
 }

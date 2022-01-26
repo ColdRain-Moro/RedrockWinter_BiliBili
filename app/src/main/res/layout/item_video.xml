@@ -42,7 +42,7 @@
             android:layout_marginTop="5dp"
             android:textColor="@color/textColorPrimary"
             android:textSize="11sp"
-            tools:text="66.8万   1678"
+            tools:text="📹 66.8万  💬 1678"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

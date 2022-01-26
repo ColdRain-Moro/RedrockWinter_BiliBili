@@ -2,11 +2,16 @@ package kim.bifrost.rain.bilibili.ui.view.fragment
 
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.widget.SearchView
+import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import kim.bifrost.coldrain.wanandroid.base.BaseVMFragment
+import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.databinding.FragmentHomePageBinding
+import kim.bifrost.rain.bilibili.ui.view.activity.SearchResultActivity
 import kim.bifrost.rain.bilibili.ui.view.adapter.MainRvPagingAdapter
 import kim.bifrost.rain.bilibili.ui.viewmodel.frag.HomePageFragViewModel
 import kim.bifrost.rain.bilibili.utils.toast
@@ -51,6 +56,27 @@ class HomePageFragment : BaseVMFragment<HomePageFragViewModel, FragmentHomePageB
         }
         binding.srlMain.setOnRefreshListener {
             adapter.refresh()
+        }
+        binding.searchView.apply {
+            isSubmitButtonEnabled = true
+            isQueryRefinementEnabled = true
+            setIconifiedByDefault(false)
+            //隐藏icon
+            findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
+                .apply {
+                    setImageDrawable(null)
+                    visibility = View.GONE
+                }
+            queryHint = "发现更多精彩"
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    if (query.isEmpty()) return false
+                    SearchResultActivity.start(requireContext(), query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String): Boolean = true
+            })
         }
     }
 }

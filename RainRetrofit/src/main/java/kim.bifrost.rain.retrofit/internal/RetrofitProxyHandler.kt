@@ -11,6 +11,7 @@ import okhttp3.FormBody
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.lang.reflect.*
+import java.net.URLEncoder
 
 /**
  * kim.bifrost.rain.retrofit.internal.RetrofitProxyHandler
@@ -53,10 +54,13 @@ class RetrofitProxyHandler<T>(
                 val iter = queryParams.iterator()
                 while (iter.hasNext()) {
                     val v = iter.next()
-                    builder.append("${v.key}=${v.value}")
+                    builder.append("${v.key}=${URLEncoder.encode(v.value, "utf-8")}")
                     if (iter.hasNext()) builder.append("&")
                 }
                 subUrl += builder.toString()
+            }
+            if (subUrl.startsWith("https://") || subUrl.startsWith("http://")) {
+                return subUrl
             }
             return retrofit.baseurl.run { if (endsWith("/")) this else "$this/" } + subUrl
         }
