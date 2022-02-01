@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.widget.SearchView
@@ -71,6 +72,7 @@ class SearchResultActivity : BaseVMActivity<SearchResultViewModel, ActivitySearc
                 override fun onQueryTextSubmit(query: String): Boolean {
                     if (query.isEmpty()) return false
                     job.cancel()
+                    keyword = query
                     // 覆写adapter,重新布局
                     adapter = SearchPagingAdapter(this@SearchResultActivity)
                     binding.rvSearchResult.adapter = adapter
@@ -94,6 +96,13 @@ class SearchResultActivity : BaseVMActivity<SearchResultViewModel, ActivitySearc
                 }
             })
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return true
     }
 
     companion object {

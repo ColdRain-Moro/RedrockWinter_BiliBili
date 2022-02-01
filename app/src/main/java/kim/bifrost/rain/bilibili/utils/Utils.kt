@@ -1,16 +1,22 @@
 package kim.bifrost.rain.bilibili.utils
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
+import android.text.style.DynamicDrawableSpan
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import java.lang.StringBuilder
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.net.URL
+import java.security.MessageDigest
 import kotlin.random.Random
 
 /**
@@ -42,4 +48,41 @@ fun Int.toNumberFormattedString(): String {
         return BigDecimal(this.toDouble() / 10000).setScale(1, RoundingMode.HALF_DOWN).toString() + "万"
     }
     return toString()
+}
+
+/**
+ * 通过md5校验计算sign
+ *
+ * @param args url参数
+ * @param salt appkey对应盐值
+ */
+fun sign(vararg args: Pair<String, String>, salt: String): String {
+    val iter = args.iterator()
+    val sb = StringBuilder()
+    while (iter.hasNext()) {
+        iter.next().also {
+            sb.append("${it.first}=${it.second}")
+            if (iter.hasNext()) {
+                sb.append("&")
+            }
+        }
+    }
+    return md5(sb.toString() + salt)
+}
+
+fun md5(content: String): String {
+    val hash = MessageDigest.getInstance("MD5").digest(content.toByteArray())
+    val hex = StringBuilder(hash.size * 2)
+    for (b in hash) {
+        var str = Integer.toHexString(b.toInt())
+        if (b < 0x10) {
+            str = "0$str"
+        }
+        hex.append(str.substring(str.length -2))
+    }
+    return hex.toString()
+}
+
+fun dynamicDrawableSpan(init: () -> Drawable) = object : DynamicDrawableSpan() {
+    override fun getDrawable(): Drawable = init()
 }

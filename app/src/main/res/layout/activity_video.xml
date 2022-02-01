@@ -17,7 +17,7 @@
             <RelativeLayout
                 android:id="@+id/rl_vv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="250dp"
                 android:background="@android:color/black"
                 android:minHeight="250dp"
                 android:visibility="visible">
@@ -25,7 +25,7 @@
                 <VideoView
                     android:id="@+id/vv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:transitionName="vv" />
 

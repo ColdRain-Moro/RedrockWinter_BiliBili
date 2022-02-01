@@ -1,8 +1,9 @@
 package kim.bifrost.rain.bilibili.model.web
 
+import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.model.web.bean.*
-import kim.bifrost.rain.retrofit.annotation.GET
-import kim.bifrost.rain.retrofit.annotation.Query
+import kim.bifrost.rain.bilibili.utils.sign
+import kim.bifrost.rain.retrofit.annotation.*
 
 /**
  * kim.bifrost.rain.bilibili.model.web.ApiService
@@ -143,6 +144,75 @@ interface ApiService {
      */
     @GET("http://s.search.bilibili.com/main/hotword")
     suspend fun hotkey(): HotKeyBean
+
+    /**
+     * 请求二维码url及扫码密钥
+     * 密钥超时时间为180s
+     * 用了tv端的接口，以APP方式鉴权
+     * 即access_token/refresh_token方式
+     * appkey: 4409e2ce8ffd12b8 (tv端)
+     * 盐值: 59b43e04ad6965f34319062b478f83dd
+     *
+     * @param appkey appkey
+     * @param ts 时间戳
+     * @param sign 签名 使用除sign外所有参数的url字串后连接相对应的盐值进行md5校验
+     */
+    @POST("http://passport.bilibili.com/x/passport-tv-login/qrcode/auth_code")
+    @FormUrlEncoded
+    suspend fun requestQRCode(
+        @Field("appkey") appkey: String = "4409e2ce8ffd12b8",
+        @Field("local_id") local_id: String = "0",
+        @Field("ts") ts: Long = System.currentTimeMillis(),
+        @Field("sign") sign: String = sign("appkey" to appkey, "local_id" to local_id, "ts" to ts.toString(), salt = "59b43e04ad6965f34319062b478f83dd")
+    ): QrCodeRequestBean
+
+    /**
+     * 登录后用得到的密钥请求以获取access_token与refresh_token
+     *
+     * @param appkey
+     * @param auth_code 密钥
+     * @param local_id
+     * @param ts
+     * @param sign
+     */
+    @POST("http://passport.bilibili.com/x/passport-tv-login/qrcode/poll")
+    @FormUrlEncoded
+    suspend fun responseQRCode(
+        @Field("appkey") appkey: String = "4409e2ce8ffd12b8",
+        @Field("auth_code") auth_code: String,
+        @Field("local_id") local_id: String = "0",
+        @Field("ts") ts: Long = System.currentTimeMillis(),
+        @Field("sign") sign: String = sign(
+            "appkey" to appkey,
+            "auth_code" to auth_code,
+            "local_id" to local_id,
+            "ts" to ts.toString(),
+            salt = "59b43e04ad6965f34319062b478f83dd"
+        )
+    ): QrCodeResponseBean
+
+    /**
+     * 获取用户登录基本信息
+     * 需要鉴权
+     *
+     * @param access_key
+     * @param appkey
+     * @param ts
+     * @param sign
+     * @return
+     */
+    @GET("http://app.bilibili.com/x/v2/account/myinfo")
+    suspend fun getLoginUserInfo(
+        @Query("access_key") access_key: String = App.accessToken.toString(),
+        @Query("appkey") appkey: String = "4409e2ce8ffd12b8",
+        @Query("ts") ts: Long = System.currentTimeMillis(),
+        @Query("sign") sign: String = sign(
+            "access_key" to access_key,
+            "appkey" to appkey,
+            "ts" to ts.toString(),
+            salt = "59b43e04ad6965f34319062b478f83dd"
+        )
+    ): LoginUserData
 
     companion object : ApiService by RetrofitHelper.service
 }

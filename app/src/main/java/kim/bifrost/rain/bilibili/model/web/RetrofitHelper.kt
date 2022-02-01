@@ -1,5 +1,6 @@
 package kim.bifrost.rain.bilibili.model.web
 
+import kim.bifrost.rain.bilibili.model.web.interceptor.RequestInterceptor
 import kim.bifrost.rain.bilibili.utils.Constant
 import kim.bifrost.rain.retrofit.GsonConverter
 import kim.bifrost.rain.retrofit.RainRetrofit
@@ -45,6 +46,7 @@ object RetrofitHelper {
         // 这里可以加拦截器
         // 在拦截器里带上鉴权信息
         return OkHttpClient.Builder()
+//            .addInterceptor(RequestInterceptor())
             .build()
     }
 }

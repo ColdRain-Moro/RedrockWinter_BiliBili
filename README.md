@@ -91,3 +91,13 @@
 ### NestedScrollView & RecyclerView & CoordinatorLayout
 
 非常鬼畜的问题，NestedScrollView使RecyclerView的懒加载失效。我已经描述不出来是什么问题了，真给我整麻了。
+
+### 观看历史
+
+由于开发的是手机APP，所以我采用了APP端的鉴权方式（jwt）
+
+这也导致了一个问题，在API-Collect里面，很多需要鉴权的接口只支持浏览器Cookie鉴权
+
+有尝试过自己抓包，发现android上抓被加密过的包实在太麻烦了
+
+于是观看历史不使用bilibili的api，采用room储存到本地 （所以只支持本地观看记录）

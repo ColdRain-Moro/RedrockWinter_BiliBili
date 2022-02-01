@@ -120,6 +120,7 @@ class RetrofitProxyHandler<T>(
                     }
                     // 协程拓展
                     if (isSuspendMethod(method)) {
+                        val type = (method.genericParameterTypes.run { get(size - 1) }.getGenerics()[0] as WildcardType).lowerBounds[0]
                         return Call<Any>(
                             okhttpCall = retrofit.okHttpClient.newCall(
                                 Request.Builder()
@@ -127,7 +128,7 @@ class RetrofitProxyHandler<T>(
                                     .post(body)
                                     .build()
                             ),
-                            type = method.genericReturnType,
+                            type = type,
                             converter = retrofit.converter
                         ).execute()
                     }

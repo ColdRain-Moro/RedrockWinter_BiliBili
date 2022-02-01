@@ -57,26 +57,5 @@ class HomePageFragment : BaseVMFragment<HomePageFragViewModel, FragmentHomePageB
         binding.srlMain.setOnRefreshListener {
             adapter.refresh()
         }
-        binding.searchView.apply {
-            isSubmitButtonEnabled = true
-            isQueryRefinementEnabled = true
-            setIconifiedByDefault(false)
-            //隐藏icon
-            findViewById<ImageView>(androidx.appcompat.R.id.search_mag_icon)
-                .apply {
-                    setImageDrawable(null)
-                    visibility = View.GONE
-                }
-            queryHint = "发现更多精彩"
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    if (query.isEmpty()) return false
-                    SearchResultActivity.start(requireContext(), query)
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String): Boolean = true
-            })
-        }
     }
 }

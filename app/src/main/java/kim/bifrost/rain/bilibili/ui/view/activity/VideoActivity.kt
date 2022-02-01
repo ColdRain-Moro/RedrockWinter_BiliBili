@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.MenuItem
 import android.widget.MediaController
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kim.bifrost.coldrain.wanandroid.base.BaseVMActivity
 import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.databinding.ActivityVideoBinding
+import kim.bifrost.rain.bilibili.model.database.AppDatabase
+import kim.bifrost.rain.bilibili.model.database.toDBBean
 import kim.bifrost.rain.bilibili.model.web.bean.SimpleVideoInfo
 import kim.bifrost.rain.bilibili.model.web.bean.VideoInfo
 import kim.bifrost.rain.bilibili.model.web.bean.VideoPlayData
@@ -22,6 +25,7 @@ import kim.bifrost.rain.bilibili.ui.view.adapter.StandardVPAdapter
 import kim.bifrost.rain.bilibili.ui.view.fragment.VideoCommentFragment
 import kim.bifrost.rain.bilibili.ui.view.fragment.VideoIntroduceFragment
 import kim.bifrost.rain.bilibili.ui.viewmodel.VideoViewModel
+import kim.bifrost.rain.bilibili.utils.toast
 import kim.bifrost.rain.bilibili.utils.toastConcurrent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,12 +75,9 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                         1 -> tab.text = "评论"
                     }
                 }.attach()
+                binding.vv.setOnPreparedListener { toast("prepare") }
             }
             videoPlayData = viewModel.getVideoPlayData(cid = videoInfo.cid, bvid = videoInfo.bvid)
-            Drawable.createFromStream(URL(videoInfo.pic).openStream(), "image.jpg").apply {
-                withContext(Dispatchers.Main) {
-                    binding.vv.background = this@apply
-                }
                 // 缓存视频
                 val videoTemp = File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), "${videoInfo.bvid}.flv")
                 if (!videoTemp.exists()) {
@@ -96,33 +97,16 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                     toastConcurrent("缓存完成")
                 }
                 withContext(Dispatchers.Main) {
-                    binding.vv.apply {
-                        setOnErrorListener { _, _, _ ->
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                videoTemp.delete()
-                                toastConcurrent("缓存视频中")
-                                videoTemp.createNewFile()
-                                FileOutputStream(videoTemp).use { fos ->
-                                    client.newCall(
-                                        Request.Builder()
-                                            .url(videoPlayData.data.durl[0].url)
-                                            .addHeader("referer", "https://www.bilibili.com/video/${videoInfo.bvid}")
-                                            .build()
-                                    ).execute().body!!.byteStream().use {
-                                        fos.write(it.readBytes())
-                                    }
-                                }
-                                toastConcurrent("缓存完成")
-                                withContext(Dispatchers.Main) {
-                                    setVideoPath(videoTemp.path)
-                                }
-                            }
-                            true
-                        }
-                        background = null
-                        setVideoPath(videoTemp.path)
-                    }
+                    binding.vv.setVideoPath(videoTemp.path)
                 }
+            // 观看历史相关逻辑
+            val dao = AppDatabase.impl.getHistoryWatchDao()
+            if (dao.selectByCid(videoInfo.cid).isEmpty()) {
+                // 没有观看过，新增
+                dao.insert(videoInfo.toDBBean())
+            } else {
+                // 观看过，更新上次观看时间
+                dao.update(videoInfo.cid, System.currentTimeMillis())
             }
         }
         binding.vv.apply {

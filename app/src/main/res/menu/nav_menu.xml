@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
+        <item android:id="@+id/nav_home"
+            android:icon="@drawable/ic_nav_home"
+            android:title="@string/nav_home"
+            />
+        <item android:id="@+id/nav_history"
+            android:icon="@drawable/ic_nav_history"
+            android:title="@string/nav_history"
+            />
+        <item android:id="@+id/nav_temp_video"
+            android:icon="@drawable/ic_nav_outline"
+            android:title="@string/nav_temp_video"
+            />
+        <item android:id="@+id/nav_my_collect"
+            android:icon="@drawable/ic_nav_collect"
+            android:title="@string/nav_my_collect"
+            />
+        <item android:id="@+id/nav_next_watch"
+            android:icon="@drawable/ic_nav_next_watch"
+            android:title="@string/nav_next_watch"
+            />
+    </group>
+</menu>

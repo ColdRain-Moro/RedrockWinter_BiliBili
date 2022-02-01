@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.text.DateFormat
 
 /**
  * kim.bifrost.rain.bilibili.App
@@ -29,19 +28,25 @@ class App : Application() {
 
         val gson: Gson by lazy { GsonBuilder().create() }
 
-        private val searchHistoryData: SharedPreferences by lazy { context.getSharedPreferences("search_history", Context.MODE_PRIVATE) }
+        // access_token refresh_token date
+        private val tokenData: SharedPreferences by lazy { context.getSharedPreferences("token", Context.MODE_PRIVATE) }
 
-        fun addSearchHistory(query: String) {
-            searchHistoryData.edit {
-                putStringSet(
-                    "search_history",
-                    searchHistoryData
-                        .getStringSet("search_history", emptySet())!!
-                        .toMutableSet()
-                        .apply {
-                            add(query)
-                        }
-                )
+        val accessToken: String?
+            get() = if (tokenData.getLong("date", 0).let { System.currentTimeMillis() < it })
+                        tokenData.getString("access_token", null) else null
+
+        val token_expires_date: Long
+            get() = tokenData.getLong("date", 0)
+
+        fun setToken(
+            access_token: String?,
+            refresh_token: String?,
+            date: Long
+        ) {
+            tokenData.edit {
+                putString("access_token", access_token)
+                putString("refresh_token", refresh_token)
+                putLong("date", date)
             }
         }
     }

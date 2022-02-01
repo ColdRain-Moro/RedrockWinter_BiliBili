@@ -14,5 +14,7 @@ import kim.bifrost.rain.bilibili.model.web.ApiService
  * @since 2022/1/16 20:10
  **/
 class MainViewModel : ViewModel() {
-
+    suspend fun getLoginData() = ApiService.getLoginUserInfo()
+    suspend fun requestQRCode() = ApiService.requestQRCode()
+    suspend fun responseQRCode(authCode: String) = ApiService.responseQRCode(auth_code = authCode)
 }
