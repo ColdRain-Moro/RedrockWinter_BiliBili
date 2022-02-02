@@ -18,6 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BiliBili">
         <activity
+            android:name=".ui.view.activity.WatchHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.activity.SearchResultActivity"
             android:exported="true" />
         <activity

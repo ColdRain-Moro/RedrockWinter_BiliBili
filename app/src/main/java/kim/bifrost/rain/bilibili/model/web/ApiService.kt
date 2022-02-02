@@ -214,6 +214,126 @@ interface ApiService {
         )
     ): LoginUserData
 
+    /**
+     * 点赞
+     *
+     * @param access_key
+     * @param aid av号
+     * @param like 0点赞 1取消点赞
+     * @return
+     */
+    @POST("x/v2/view/like")
+    @FormUrlEncoded
+    suspend fun like(
+        @Field("access_key") access_key: String = App.accessToken.toString(),
+        @Field("aid") aid: Int,
+        @Field("like") like: Int
+    ): LikeResponse
+
+    /**
+     * 检查视频是否已被点赞
+     *
+     * @param access_key
+     * @param aid av号
+     * @param bvid bv号
+     * @return
+     */
+    @GET("x/web-interface/archive/has/like")
+    suspend fun isLike(
+        @Query("access_key") access_key: String = App.accessToken.toString(),
+        @Query("aid") aid: Int? = null,
+        @Query("bvid") bvid: String? = null
+    ): IsLikeResponse
+
+    /**
+     * 投币
+     *
+     * @param access_key
+     * @param aid av号
+     * @param multiply 投币数量，上限为2
+     * @param select_like 是否点赞 默认为0，不点赞
+     * @return
+     */
+    @POST("x/v2/view/coin/add")
+    @FormUrlEncoded
+    suspend fun coin(
+        @Field("access_key") access_key: String = App.accessToken.toString(),
+        @Field("aid") aid: Int,
+        @Field("multiply") multiply: Int,
+        @Field("select_like") select_like: Int = 0
+    ): CoinResponse
+
+    /**
+     * 判断视频已经投币的数量
+     *
+     * @param access_key
+     * @param aid
+     * @param bvid
+     * @return
+     */
+    @GET("x/web-interface/archive/coins")
+    suspend fun isCoin(
+        @Query("access_key") access_key: String = App.accessToken.toString(),
+        @Query("aid") aid: Int? = null,
+        @Query("bvid") bvid: String? = null
+    ): IsCoinResponse
+
+    /**
+     * 收藏
+     * errorCode
+     *   0：成功
+     *   -101：账号未登录
+     *   -111：csrf校验失败
+     *   -400：请求错误
+     *   -403：访问权限不足
+     *   10003：不存在该稿件
+     *   11201：已经收藏过了
+     *   11202：已经取消收藏了
+     *   11203：达到收藏上限
+     *   72010017：参数错误
+     *
+     * @param access_key
+     * @param aid
+     * @param type
+     * @param add_media_ids 同时添加多个，用 ,（%2C）分隔
+     * @param del_media_ids 同时取消多个，用 ,（%2C）分隔
+     */
+    @POST("x/v3/fav/resource/deal")
+    @FormUrlEncoded
+    suspend fun collect(
+        @Field("access_key") access_key: String = App.accessToken.toString(),
+        @Field("rid") aid: Int,
+        @Field("type") type: Int = 2,
+        @Field("add_media_ids") add_media_ids: String? = null,
+        @Field("del_media_ids") del_media_ids: String? = null
+    ): CollectResponse
+
+    /**
+     * 是否收藏
+     *
+     * @param access_key
+     * @param aid avid或bvid
+     */
+    @GET("x/v2/fav/video/favoured")
+    suspend fun isCollect(
+        @Query("access_key") access_key: String = App.accessToken.toString(),
+        @Query("aid") aid: Int
+    ): IsCollectResponse
+
+    /**
+     * 一键三连
+     *
+     * @param access_key
+     * @param aid avid
+     * @return
+     */
+    @POST("x/v2/view/like/triple")
+    @FormUrlEncoded
+    suspend fun allLike(
+        @Field("access_key") access_key: String = App.accessToken.toString(),
+        @Field("aid") aid: Int? = null
+    ): AllLikeResponse
+
     companion object : ApiService by RetrofitHelper.service
 }
 

@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.reflect.TypeToken
+import kim.bifrost.rain.bilibili.App
 import java.lang.StringBuilder
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -86,3 +88,11 @@ fun md5(content: String): String {
 fun dynamicDrawableSpan(init: () -> Drawable) = object : DynamicDrawableSpan() {
     override fun getDrawable(): Drawable = init()
 }
+
+/**
+ * 通过json的序列化与反序列化进行两个结构相似的不同类型的转换
+ *
+ * @param T
+ * @return
+ */
+inline fun <reified T> Any.castToType(): T = App.gson.fromJson(App.gson.toJson(this), object : TypeToken<T>(){}.type)

@@ -64,9 +64,6 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
             }
         }
 
-    // 如果登录过了就会自动请求这个data
-    private var loginUserData: LoginUserData? = null
-
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,7 +100,7 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                     }
                     // 播放历史
                     R.id.nav_history -> {
-                        // TODO
+                        startActivity(Intent(this@MainActivity, WatchHistoryActivity::class.java))
                     }
                     // 离线缓存
                     R.id.nav_temp_video -> {

@@ -17,8 +17,8 @@ data class WatchHistoryVideoBean(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id", typeAffinity = ColumnInfo.INTEGER)
     val id: Int? = null,
-    @ColumnInfo(name = "cid", typeAffinity = ColumnInfo.INTEGER)
-    val cid: Int,
+    @ColumnInfo(name = "bvid", typeAffinity = ColumnInfo.TEXT)
+    val bvid: String,
     @ColumnInfo(name = "title", typeAffinity = ColumnInfo.TEXT)
     val title: String,
     @ColumnInfo(name = "author", typeAffinity = ColumnInfo.TEXT)
@@ -31,10 +31,14 @@ data class WatchHistoryVideoBean(
     val img: String,
     @ColumnInfo(name = "last_watch", typeAffinity = ColumnInfo.INTEGER)
     val lastWatch: Long
-)
+) {
+    fun toSimpleVideoInfo() {
+
+    }
+}
 
 fun VideoInfo.Data.toDBBean(lastWatch: Long = System.currentTimeMillis()) = WatchHistoryVideoBean(
-    cid = cid,
+    bvid = bvid,
     title = title,
     author = owner.name,
     play = stat.view,
