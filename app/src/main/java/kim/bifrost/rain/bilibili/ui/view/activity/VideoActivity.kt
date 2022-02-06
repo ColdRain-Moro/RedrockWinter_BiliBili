@@ -2,16 +2,19 @@ package kim.bifrost.rain.bilibili.ui.view.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import android.view.MenuItem
+import android.view.Surface
+import android.view.ViewGroup
 import android.widget.MediaController
+import android.widget.RelativeLayout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kim.bifrost.coldrain.wanandroid.base.BaseVMActivity
 import kim.bifrost.rain.bilibili.App
@@ -34,7 +37,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 
 class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
     isCancelStatusBar = false
@@ -42,6 +44,8 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
 
     private val simpleVideoInfo by lazy { App.gson.fromJson(intent.getStringExtra("data"), SimpleVideoInfo::class.java) }
     private val client = OkHttpClient()
+
+    private lateinit var normalLayoutParams : ViewGroup.LayoutParams
 
     private lateinit var videoInfo: VideoInfo.Data
     private lateinit var videoPlayData: VideoPlayData
@@ -101,12 +105,12 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                 }
             // 观看历史相关逻辑
             val dao = AppDatabase.impl.getHistoryWatchDao()
-            if (dao.selectByCid(videoInfo.cid).isEmpty()) {
+            if (dao.selectByBvid(videoInfo.bvid).isEmpty()) {
                 // 没有观看过，新增
                 dao.insert(videoInfo.toDBBean())
             } else {
                 // 观看过，更新上次观看时间
-                dao.update(videoInfo.cid, System.currentTimeMillis())
+                dao.update(videoInfo.bvid, System.currentTimeMillis())
             }
         }
         binding.vv.apply {
@@ -128,6 +132,18 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
             android.R.id.home -> finish()
         }
         return true
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val rot = windowManager.defaultDisplay.rotation
+        if (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270) {
+            normalLayoutParams = binding.rlVv.layoutParams
+            val layoutParams = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.MATCH_PARENT)
+            binding.rlVv.layoutParams = layoutParams
+        } else if (rot == Surface.ROTATION_0) {
+            binding.rlVv.layoutParams = normalLayoutParams
+        }
     }
 
     companion object {

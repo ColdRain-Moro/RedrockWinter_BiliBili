@@ -19,7 +19,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class WatchHistoryActivity : BaseVMActivity<WatchHistoryViewModel, ActivitySearchResultBinding>() {
+class WatchHistoryActivity : BaseVMActivity<WatchHistoryViewModel, ActivitySearchResultBinding>(
+    isCancelStatusBar = false
+) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.toolbarSearchResult.apply {
@@ -45,12 +47,13 @@ class WatchHistoryActivity : BaseVMActivity<WatchHistoryViewModel, ActivitySearc
             // 订阅数据库变更，及时更新
             viewModel.getAllHistory().collectLatest {
                 withContext(Dispatchers.Main) {
-                    binding.rvSearchResult.adapter = WatchHistoryAdapter(this@WatchHistoryActivity, it)
+                    binding.rvSearchResult.adapter = WatchHistoryAdapter(this@WatchHistoryActivity, it.sortedBy { it.lastWatch }.reversed())
                 }
             }
         }
         // 搜索条
         binding.svSearchResult.apply {
+            queryHint = "关键词搜索"
             isQueryRefinementEnabled = true
             setIconifiedByDefault(false)
             //隐藏icon

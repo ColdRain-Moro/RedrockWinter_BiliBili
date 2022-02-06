@@ -27,13 +27,13 @@ interface HistoryWatchDao {
     fun insert(entity: WatchHistoryVideoBean)
 
     /**
-     * 通过cid选取一条数据
+     * 通过bvid选取一条数据
      *
-     * @param cid
+     * @param bvid
      * @return
      */
-    @Query("SELECT * FROM watch_history WHERE cid=:cid")
-    fun selectByCid(cid: Int): List<WatchHistoryVideoBean>
+    @Query("SELECT * FROM watch_history WHERE bvid=:bvid")
+    fun selectByBvid(bvid: String): List<WatchHistoryVideoBean>
 
     /**
      * 搜索
@@ -47,11 +47,11 @@ interface HistoryWatchDao {
     /**
      * 更新视频最后观看日期
      *
-     * @param cid
+     * @param bvid
      * @param lastWatch
      */
-    @Query("UPDATE watch_history SET last_watch=:lastWatch WHERE cid=:cid")
-    fun update(cid: Int, lastWatch: Long)
+    @Query("UPDATE watch_history SET last_watch=:lastWatch WHERE bvid=:bvid")
+    fun update(bvid: String, lastWatch: Long)
 
     /**
      * 清空表中所有内容

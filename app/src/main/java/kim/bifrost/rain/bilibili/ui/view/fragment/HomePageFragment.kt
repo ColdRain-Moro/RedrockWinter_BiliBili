@@ -36,7 +36,7 @@ class HomePageFragment : BaseVMFragment<HomePageFragViewModel, FragmentHomePageB
             this.adapter = adapter
         }
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.recommendList.collectLatest {
+            viewModel.homePageFlow.collectLatest {
                 adapter.submitData(it)
             }
         }

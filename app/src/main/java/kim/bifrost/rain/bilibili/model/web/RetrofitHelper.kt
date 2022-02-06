@@ -46,7 +46,6 @@ object RetrofitHelper {
         // 这里可以加拦截器
         // 在拦截器里带上鉴权信息
         return OkHttpClient.Builder()
-//            .addInterceptor(RequestInterceptor())
             .build()
     }
 }

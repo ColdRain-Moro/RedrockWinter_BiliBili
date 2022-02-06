@@ -8,15 +8,14 @@ import kim.bifrost.coldrain.wanandroid.base.BasePagingSource
 import kim.bifrost.rain.bilibili.model.web.ApiService
 
 /**
- * kim.bifrost.rain.bilibili.ui.viewmodel.frag.HomePageFragViewModel
+ * kim.bifrost.rain.bilibili.ui.viewmodel.frag.ChildrenRegionFragViewModel
  * BiliBili
  *
  * @author 寒雨
- * @since 2022/1/19 14:08
+ * @since 2022/2/5 20:29
  **/
-class HomePageFragViewModel : ViewModel() {
-
-    val homePageFlow = Pager(
+class ChildrenRegionFragViewModel : ViewModel() {
+    suspend fun getDataFlow(rid: Int) = Pager(
         config = PagingConfig(
             pageSize = 10,
             enablePlaceholders = false,
@@ -24,10 +23,7 @@ class HomePageFragViewModel : ViewModel() {
         ),
         pagingSourceFactory = {
             BasePagingSource {
-                // 过滤广告和番剧，只保留small_cover_v2的视频
-                // 番剧日后也许会适配 但广告给爷死
-                ApiService.homePage(pull = false).data.items
-                    .filter { s -> s.cardType == "small_cover_v2" || s.cardType == "large_cover_v1" }
+                ApiService.regionLoadMore(rid = rid, pull = false).data.new
             }
         }
     ).flow

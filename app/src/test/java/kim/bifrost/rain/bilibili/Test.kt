@@ -1,15 +1,10 @@
 package kim.bifrost.rain.bilibili
 
 import kim.bifrost.rain.bilibili.model.web.ApiService
-import kim.bifrost.rain.bilibili.model.web.bean.VideoInfo
-import kim.bifrost.rain.bilibili.model.web.bean.VideoPlayData
-import kotlinx.coroutines.runBlocking
+import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.FileWriter
+
 
 /**
  * kim.bifrost.rain.bilibili.Test
@@ -19,6 +14,16 @@ import java.io.FileWriter
  * @since 2022/1/22 0:13
  **/
 suspend fun main() {
-    val bean = ApiService.requestQRCode()
-    println(bean)
+    val data = ApiService.like(
+        access_key = "434a6e6dcdc5ae1cd3e950f0919cf521",
+        aid = 888300298,
+        like = 0
+    )
+    val client = OkHttpClient.Builder().build()
+    val body = FormBody.Builder()
+        .add("access_key", "434a6e6dcdc5ae1cd3e950f0919cf521")
+        .add("aid", "888300298")
+        .add("like", "0")
+        .build()
+    println(client.newCall(Request.Builder().url("https://app.bilibili.com/x/v2/view/like").post(body).build()).execute().body?.string())
 }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -43,7 +44,10 @@ class App : Application() {
             refresh_token: String?,
             date: Long
         ) {
-            tokenData.edit {
+            tokenData.edit(commit = true) {
+                remove("access_token")
+                remove("refresh_token")
+                remove("date")
                 putString("access_token", access_token)
                 putString("refresh_token", refresh_token)
                 putLong("date", date)

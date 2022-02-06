@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -35,6 +36,7 @@ import kim.bifrost.rain.bilibili.utils.toastConcurrent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
 class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
     isCancelStatusBar = false
@@ -45,7 +47,6 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
     // 启动登录页面
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
                 // 不需要实际的结果，只需要在这个activity退出之后执行
                 lifecycleScope.launch(Dispatchers.IO) {
                     val data = viewModel.responseQRCode(requestData.auth_code)
@@ -54,14 +55,13 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                             toastConcurrent("登录成功!")
                             App.setToken(data.data?.access_token,
                                 data.data?.refresh_token,
-                                System.currentTimeMillis() + data.data!!.expires_in * 1000)
+                                System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(data.data!!.expires_in.toLong()))
                         }
                         else -> {
                             toastConcurrent(data.message)
                         }
                     }
                 }
-            }
         }
 
     @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
@@ -134,7 +134,6 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                 when (it.itemId) {
                     R.id.bottom_nav_home -> binding.vp2Main.currentItem = 0
                     R.id.bottom_nav_dynamic -> binding.vp2Main.currentItem = 1
-                    R.id.bottom_my_status -> binding.vp2Main.currentItem = 2
                 }
                 true
             }
@@ -161,6 +160,18 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                 override fun onQueryTextChange(newText: String): Boolean = true
             })
         }
+        // 头像点击事件
+        binding.navView.getHeaderView(0).apply {
+            findViewById<ShapeableImageView>(R.id.iv_user).apply {
+                setOnClickListener {
+                    if (!UserManager.isLogged) {
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            requestLogin()
+                        }
+                    }
+                }
+            }
+        }
         // 若已经登录开协程请求登录数据
         if (UserManager.isLogged) {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -177,33 +188,15 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                                     Glide.with(this)
                                         .load(data.data.face)
                                         .into(this)
-                                    setOnClickListener {
-                                        if (!UserManager.isLogged) {
-                                            // 未登录 进入登录页面
-                                            lifecycleScope.launch(Dispatchers.IO) {
-                                                requestLogin()
-                                            }
-                                        }
-                                    }
+                                }
+                                findViewById<ImageView>(R.id.iv_drawer_background).apply {
+                                    Glide.with(this)
+                                        .load(R.drawable.bili_drawerbg_logined)
+                                        .into(this)
                                 }
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val span = buildSpannedString {
                                         append(data.data.name)
-                                        // 显示带会员图标
-                                        if (data.data.vip.avatar_subscript == 1) {
-                                            append("[img]")
-                                            setSpan(
-                                                dynamicDrawableSpan {
-                                                    resources.getDrawable(R.drawable.ic_vip, theme)
-                                                        .also {
-                                                            it.setBounds(20, 0, 0, 0)
-                                                        }
-                                                },
-                                                length - 6,
-                                                length - 1,
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                                            )
-                                        }
                                     }
                                     withContext(Dispatchers.Main) {
                                         findViewById<TextView>(R.id.tv_user_name).text = span

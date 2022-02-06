@@ -12,10 +12,12 @@ import kim.bifrost.rain.retrofit.annotation.*
  * @author 寒雨
  * @since 2022/1/19 12:10
  **/
+@Suppress("SpellCheckingInspection")
 interface ApiService {
 
     /**
      * 获取首页推荐
+     * 过时
      *
      * @param tid 非必要
      * @param page 页数
@@ -23,6 +25,7 @@ interface ApiService {
      * @param order 排列方式
      * @return
      */
+    @Deprecated("过时的API", replaceWith = ReplaceWith("use homePage()"))
     @GET("recommend")
     suspend fun getRecommends(
         @Query("tid") tid: Int? = null,
@@ -222,7 +225,7 @@ interface ApiService {
      * @param like 0点赞 1取消点赞
      * @return
      */
-    @POST("x/v2/view/like")
+    @POST("https://app.bilibili.com/x/v2/view/like")
     @FormUrlEncoded
     suspend fun like(
         @Field("access_key") access_key: String = App.accessToken.toString(),
@@ -254,7 +257,7 @@ interface ApiService {
      * @param select_like 是否点赞 默认为0，不点赞
      * @return
      */
-    @POST("x/v2/view/coin/add")
+    @POST("https://app.bilibili.com/x/v2/view/coin/add")
     @FormUrlEncoded
     suspend fun coin(
         @Field("access_key") access_key: String = App.accessToken.toString(),
@@ -327,12 +330,132 @@ interface ApiService {
      * @param aid avid
      * @return
      */
-    @POST("x/v2/view/like/triple")
+    @POST("https://app.bilibili.com/x/v2/view/like/triple")
     @FormUrlEncoded
     suspend fun allLike(
         @Field("access_key") access_key: String = App.accessToken.toString(),
         @Field("aid") aid: Int? = null
     ): AllLikeResponse
+
+    /**
+     * 获取所有分区
+     *
+     * @param appkey
+     * @param build
+     * @param ts
+     * @return
+     */
+    @GET("https://app.bilibili.com/x/v2/region")
+    suspend fun getRegions(
+        @Query("appkey") appkey: String = "4409e2ce8ffd12b8",
+        @Query("build") build: Int = 505000,
+        @Query("ts") ts: Long = System.currentTimeMillis() / 1000
+    ): RegionResponse
+
+    /**
+     * 获取分区数据
+     * Banner/Recommend/New
+     *
+     * @param build
+     * @param mobi_app
+     * @param platform
+     * @param rid 分区rid
+     * @return
+     */
+    @GET("https://app.bilibili.com/x/v2/region/dynamic")
+    suspend fun getRegionData(
+        @Query("build") build: Int = 5410000,
+        @Query("mobi_app") mobi_app: String = "android",
+        @Query("platform") platform: String = "android",
+        @Query("rid") rid: Int
+    ): RegionDataResponse
+
+    /**
+     * 读取更多分区内容
+     * 一次返回10个视频
+     * 配合paging实现分页加载
+     *
+     * @param build
+     * @param pull
+     * @param platform
+     * @param rid 分区rid
+     * @param ctime
+     */
+    @GET("https://app.bilibili.com/x/v2/region/dynamic/list")
+    suspend fun regionLoadMore(
+        @Query("build") build: Int = 5400000,
+        @Query("pull") pull: Boolean = false,
+        @Query("platform") platform: String = "android",
+        @Query("rid") rid: Int,
+        @Query("ctime") ctime: Long = System.currentTimeMillis()
+    ): RegionContentResponse
+
+    /**
+     * 请求首页数据
+     *
+     * @param access_key
+     * @param adExtra
+     * @param autoplayCard
+     * @param bannerHash
+     * @param column
+     * @param deviceType
+     * @param flush
+     * @param fnVal
+     * @param fnVer
+     * @param forceHost
+     * @param index
+     * @param loginEvent
+     * @param network
+     * @param openEvent
+     * @param pull 是否是新请求的数据
+     * @param qn
+     * @param recsysMode
+     * @return
+     */
+    @GET("https://app.bilibili.com/x/v2/feed/index")
+    suspend fun homePage(
+        @Query("access_key") access_key: String? = App.accessToken,
+        @Query("ad_extra") adExtra: String? = null,
+        @Query("autoplay_card") autoplayCard: Int = 0,
+        @Query("banner_hash") bannerHash: String? = null,
+        @Query("column") column: Int = 3,
+        @Query("device_type") deviceType: Int = 0,
+        @Query("flush") flush: Int = 0,
+        @Query("fnval") fnVal: Int = 16,
+        @Query("fnver") fnVer: Int = 0,
+        @Query("force_host") forceHost: Int = 0,
+        @Query("idx") index: Long = System.currentTimeMillis(),
+        @Query("login_event") loginEvent: Int = 0,
+        @Query("network") network: String = "mobile",
+        @Query("open_event") openEvent: String? = null,
+        @Query("pull") pull: Boolean = true,
+        @Query("qn") qn: Int = 32,
+        @Query("recsys_mode") recsysMode: Int = 0
+    ): HomePage
+
+    /**
+     * 获取用户信息
+     * 由于不能鉴权，部分信息无法获取
+     *
+     * @param mid
+     */
+    @GET("x/space/acc/info")
+    suspend fun getUserInfo(
+        @Query("mid") mid: Int
+    ): UserInfo
+
+    /**
+     * 获取用户卡片信息
+     *
+     * @param mid
+     * @param photo
+     * @return
+     */
+    @GET("x/web-interface/card")
+    suspend fun getUserCard(
+        @Query("mid") mid: Int,
+        @Query("photo") photo: Boolean
+    ): UserCardInfo
 
     companion object : ApiService by RetrofitHelper.service
 }

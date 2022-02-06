@@ -8,8 +8,4 @@
         android:id="@+id/bottom_nav_dynamic"
         android:icon="@drawable/ic_dynamic"
         android:title="@string/dynamic" />
-    <item
-        android:id="@+id/bottom_my_status"
-        android:icon="@drawable/ic_my_status"
-        android:title="@string/my_status" />
 </menu>

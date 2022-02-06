@@ -18,13 +18,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BiliBili">
         <activity
+            android:name=".ui.view.activity.RegionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.activity.WatchHistoryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.view.activity.SearchResultActivity"
             android:exported="true" />
         <activity
+            android:configChanges="orientation|screenSize"
             android:name=".ui.view.activity.VideoActivity"
+            android:exported="true" />
+        <activity
+            android:name=".ui.view.activity.WebPageActivity"
             android:exported="true" />
         <activity
             android:name=".ui.view.activity.SplashActivity"
