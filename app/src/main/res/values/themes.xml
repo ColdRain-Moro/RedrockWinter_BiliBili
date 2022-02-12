@@ -2,18 +2,19 @@
     <!-- Base application theme. -->
     <style name="Theme.BiliBili" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/origin</item>
+        <item name="colorPrimaryDark">@color/origin_deep</item>
+        <item name="colorPrimaryVariant">@color/origin_shallow</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/sub</item>
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="colorSecondary">@color/sub</item>
+        <item name="colorSecondaryVariant">@color/sub_deep</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/notosans</item>
+        <item name="android:includeFontPadding">false</item>
     </style>
 </resources>

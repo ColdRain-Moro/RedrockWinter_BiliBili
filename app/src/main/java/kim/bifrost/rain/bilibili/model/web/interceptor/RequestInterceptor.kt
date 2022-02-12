@@ -1,5 +1,6 @@
 package kim.bifrost.rain.bilibili.model.web.interceptor
 
+import android.util.Log
 import kim.bifrost.rain.bilibili.App
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -14,7 +15,6 @@ import okhttp3.Response
 class RequestInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val builder = chain.request().newBuilder()
-        App.accessToken?.let { builder.addHeader("access_token", it) }
-        return chain.proceed(builder.build())
+        return chain.proceed(builder.build().also { Log.d("Test", "(RequestInterceptor.kt:17) ==> ${it.headers.toMultimap()}") })
     }
 }

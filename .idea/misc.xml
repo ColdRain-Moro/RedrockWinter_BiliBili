@@ -21,6 +21,7 @@
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/activity_web_page.xml" value="0.17238183503243745" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_children_region.xml" value="0.18614130434782608" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_coin_dialog.xml" value="0.136" />
+        <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_dialog_video_setting.xml" value="0.21422101449275363" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_dynamic.xml" value="0.14583333333333334" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_favrourite_dialog.xml" value="0.18614130434782608" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/fragment_home_page.xml" value="0.14583333333333334" />
@@ -38,6 +39,7 @@
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/layout/nav_header.xml" value="0.18614130434782608" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/menu/menu_bottom_nav.xml" value="0.25364583333333335" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/menu/nav_menu.xml" value="0.25364583333333335" />
+        <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/menu/video_toolbar.xml" value="0.25364583333333335" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/menu/watch_history_toolbar.xml" value="0.25364583333333335" />
         <entry key="..\:/ColdRain_Moro/AndroidProject/BiliBili/app/src/main/res/xml/network_security_config.xml" value="0.23822463768115942" />
       </map>

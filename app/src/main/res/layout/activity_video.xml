@@ -14,22 +14,11 @@
             android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-            <RelativeLayout
-                android:id="@+id/rl_vv"
+
+            <xyz.doikki.videoplayer.player.VideoView
+                android:id="@+id/vv"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/black"
-                android:minHeight="260dp"
-                android:visibility="visible">
-
-                <VideoView
-                    android:id="@+id/vv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_centerInParent="true"
-                    android:transitionName="vv" />
-
-            </RelativeLayout>
+                android:layout_height="260dp" />
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:theme="@style/ToolbarTheme"
@@ -48,6 +37,7 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tl_video"
+                android:elevation="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <com.google.android.material.tabs.TabItem

@@ -1,9 +1,18 @@
 package kim.bifrost.rain.bilibili.model.web
 
+import android.util.Log
 import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.model.web.bean.*
+import kim.bifrost.rain.bilibili.utils.decompress
 import kim.bifrost.rain.bilibili.utils.sign
 import kim.bifrost.rain.retrofit.annotation.*
+import okhttp3.*
+import java.io.IOException
+import java.io.InputStream
+import java.nio.charset.Charset
+import java.util.zip.DeflaterInputStream
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * kim.bifrost.rain.bilibili.model.web.ApiService
@@ -48,10 +57,11 @@ interface ApiService {
      */
     @GET("x/player/playurl")
     suspend fun getVideo(
+        @Query("access_key") access_key: String? = App.accessToken,
         @Query("avid") avid: Int? = null,
         @Query("bvid") bvid: String? = null,
         @Query("cid") cid: Int,
-        @Query("qn") qn: Int? = 32,
+        @Query("qn") qn: Int? = 64,
         @Query("fnval") fnval: Int? = null,
         @Query("fnver") fnver: Int? = null,
         @Query("fourk") fourk: Int? = null,
@@ -457,7 +467,34 @@ interface ApiService {
         @Query("photo") photo: Boolean
     ): UserCardInfo
 
-    companion object : ApiService by RetrofitHelper.service
+    companion object : ApiService by RetrofitHelper.service {
+
+        private val client by lazy { OkHttpClient.Builder().build() }
+
+        /**
+         * 获取xml弹幕
+         * 回调转为协程的实践
+         *
+         * @param cid
+         * @return
+         */
+        suspend fun getXmlDanmaku(cid: Int): ByteArray? = suspendCoroutine {
+            client.newCall(
+                Request.Builder()
+                    .url("http://comment.bilibili.com/$cid.xml")
+                    .build()
+            ).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    it.resumeWithException(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    it.resumeWith(Result.success(response.body?.bytes()?.decompress()))
+                }
+            })
+        }
+
+    }
 }
 
 interface ProtoBufService {

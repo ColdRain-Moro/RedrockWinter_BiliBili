@@ -15,4 +15,8 @@
     <string name="nav_my_collect">我的收藏</string>
     <string name="nav_next_watch">稍后再看</string>
     <string name="remove_all_history">清空历史记录</string>
+    <string name="danmaku_shield_level">弹幕屏蔽等级</string>
+    <string name="enable_danmaku">是否启用弹幕</string>
+    <string name="video_settings">视频设置</string>
+    <string name="video_play_settings">视频播放设置</string>
 </resources>

@@ -58,6 +58,20 @@ android {
 }
 
 dependencies {
+    // 弹幕库
+    implementation 'com.github.ctiao:DanmakuFlameMaster:0.9.25'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.6.0'
+    implementation 'com.google.android.exoplayer:extension-okhttp:2.14.1'
+    implementation 'xyz.doikki.android.dkplayer:player-exo:3.3.5'
+    // dkPlayer
+    implementation 'xyz.doikki.android.dkplayer:dkplayer-java:3.3.5'
+    // 使用ijk player进行解码
+    implementation 'xyz.doikki.android.dkplayer:player-ijk:3.3.5'
+    // dk player ui
+    implementation 'xyz.doikki.android.dkplayer:dkplayer-ui:3.3.5'
+    // dk player cache
+    implementation 'xyz.doikki.android.dkplayer:videocache:3.3.5'
+
     // room
     implementation "androidx.room:room-ktx:2.4.1"
     kapt "androidx.room:room-compiler:2.4.1"

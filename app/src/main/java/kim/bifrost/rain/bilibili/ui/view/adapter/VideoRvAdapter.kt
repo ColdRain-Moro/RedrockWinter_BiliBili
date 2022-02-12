@@ -30,7 +30,7 @@ class VideoRvAdapter(
         init {
             binding.root.setOnClickListener {
                 if (getItemViewType(bindingAdapterPosition) == 1) {
-                    val obj = data[bindingAdapterPosition]
+                    val obj = data[bindingAdapterPosition - 1]
                     VideoActivity.start(context, App.gson.toJson(obj))
                 }
             }

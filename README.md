@@ -21,24 +21,24 @@
 - ~~观看历史~~
 - 我的收藏
 - 稍后再看
-- 分区推荐
+- ~~分区推荐~~
 
 ### 以下是考核结束后可能会做的内容
 
-- 使用ijkPlayer替换原生的VideoView/网络视频播放缓存
-- 弹幕 使用[DanmakuView](https://github.com/duzhaokun123/DanmakuView)
-- 更换首页推荐的api（现在这个api是老的，每次推荐的内容都一样）
+- ~~使用ijkPlayer替换原生的VideoView/网络视频播放缓存~~
+- ~~弹幕 使用DanmakuFlameMaster实现~~
+- ~~更换首页推荐的api（现在这个api是老的，每次推荐的内容都一样）~~
 - 个人空间/动态/番剧相关
 - 美化UI
 - 三连动画
 
 ## 功能展示
 
-// TODO
+<img src = 'https://s3.bmp.ovh/imgs/2022/02/e504a57221869ceb.gif' />
 
 ## 技术亮点
 
-- MVVM架构/Paging3/协程
+- MVVM架构/Paging3/协程/Flow
 - Retrofit简单实现
 - DialogFragment实现投币/收藏选项
 
@@ -115,3 +115,20 @@
 有尝试过自己抓包，发现android上抓被加密过的包实在太麻烦了
 
 于是观看历史不使用bilibili的api，采用room储存到本地 （所以只支持本地观看记录）
+
+### UI设计优化
+
+- 字体
+- 颜色
+  * 选择一种原色，一种次色，以及原色和次色的深色和浅色变体
+- 图标/文字大小/文字颜色透明度
+- 卡片圆角/边距/布局
+- 活用动效事件
+
+## 待提升的地方
+
+- 垃圾的UI设计
+- 不是很会看源码
+- 工作效率低下
+- 有畏难情绪
+- etc.

@@ -8,6 +8,11 @@
         <item name="colorControlNormal">@color/white</item>
     </style>
     <style name="AppAutoCompleteTextView">
-        <item name="android:editTextColor">@color/textColorTitle</item>
+        <item name="android:editTextColor">@color/colorAccent</item>
+    </style>
+    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
     </style>
 </resources>

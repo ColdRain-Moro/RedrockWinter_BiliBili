@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:elevation="3dp"
-    app:cardCornerRadius="5dp"
+    app:cardCornerRadius="3dp"
     android:layout_margin="5dp"
     android:layout_width="195dp"
     android:layout_height="wrap_content">
@@ -26,8 +26,8 @@
             <TextView
                 android:id="@+id/title"
                 android:textColor="@color/textColorTitle"
-                android:textSize="12sp"
-                android:layout_marginBottom="10dp"
+                android:textSize="@dimen/text_size"
+                android:layout_marginBottom="@dimen/leave_blank_distance"
                 tools:text="斯宾塞先生，盖茨陛下，我滴任务完成啦！"
                 android:maxLines="2"
                 android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
             <TextView
                 android:id="@+id/author"
                 tools:text="万山孤影"
-                android:textSize="11sp"
+                android:textSize="@dimen/small_font_size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

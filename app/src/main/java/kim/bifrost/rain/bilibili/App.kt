@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import xyz.doikki.videoplayer.ijk.IjkPlayerFactory
+import xyz.doikki.videoplayer.player.AndroidMediaPlayerFactory
+import xyz.doikki.videoplayer.player.VideoViewConfig
+import xyz.doikki.videoplayer.player.VideoViewManager
 
 /**
  * kim.bifrost.rain.bilibili.App
@@ -21,9 +24,21 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
+        VideoViewManager.setConfig(VideoViewConfig.newBuilder()
+            //使用使用IjkPlayer解码
+            .setPlayerFactory(IjkPlayerFactory.create())
+            //使用MediaPlayer解码
+//            .setPlayerFactory(AndroidMediaPlayerFactory.create())
+            .build())
     }
 
     companion object {
+
+        // 弹幕屏蔽等级
+        var danmakuShieldLevel = 5
+        // 启用弹幕
+        var enableDanmaku = true
+
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
 

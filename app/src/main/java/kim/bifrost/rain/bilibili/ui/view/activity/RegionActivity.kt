@@ -21,7 +21,6 @@ class RegionActivity : BaseVMActivity<RegionViewModel, ActivityRegionBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.statusBarColor = Color.TRANSPARENT
         // Toolbar
         binding.toolbar.apply {
             setSupportActionBar(this)

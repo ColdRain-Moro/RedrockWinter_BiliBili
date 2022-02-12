@@ -2,39 +2,37 @@ package kim.bifrost.rain.bilibili.ui.view.activity
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Environment
+import android.view.Menu
 import android.view.MenuItem
-import android.view.Surface
-import android.view.ViewGroup
-import android.widget.MediaController
-import android.widget.RelativeLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kim.bifrost.coldrain.wanandroid.base.BaseVMActivity
 import kim.bifrost.rain.bilibili.App
+import kim.bifrost.rain.bilibili.R
 import kim.bifrost.rain.bilibili.databinding.ActivityVideoBinding
 import kim.bifrost.rain.bilibili.model.database.AppDatabase
 import kim.bifrost.rain.bilibili.model.database.toDBBean
+import kim.bifrost.rain.bilibili.model.web.ApiService
 import kim.bifrost.rain.bilibili.model.web.bean.SimpleVideoInfo
 import kim.bifrost.rain.bilibili.model.web.bean.VideoInfo
 import kim.bifrost.rain.bilibili.model.web.bean.VideoPlayData
 import kim.bifrost.rain.bilibili.ui.view.adapter.StandardVPAdapter
 import kim.bifrost.rain.bilibili.ui.view.fragment.VideoCommentFragment
 import kim.bifrost.rain.bilibili.ui.view.fragment.VideoIntroduceFragment
+import kim.bifrost.rain.bilibili.ui.view.fragment.dialog.VideoSettingDialogFragment
 import kim.bifrost.rain.bilibili.ui.viewmodel.VideoViewModel
-import kim.bifrost.rain.bilibili.utils.toast
-import kim.bifrost.rain.bilibili.utils.toastConcurrent
+import kim.bifrost.rain.bilibili.widget.MyDanmakuView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import xyz.doikki.videocontroller.StandardVideoController
 import java.io.File
 import java.io.FileOutputStream
 
@@ -43,9 +41,8 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
 ) {
 
     private val simpleVideoInfo by lazy { App.gson.fromJson(intent.getStringExtra("data"), SimpleVideoInfo::class.java) }
-    private val client = OkHttpClient()
 
-    private lateinit var normalLayoutParams : ViewGroup.LayoutParams
+    private val danmakuView by lazy { MyDanmakuView(this) }
 
     private lateinit var videoInfo: VideoInfo.Data
     private lateinit var videoPlayData: VideoPlayData
@@ -65,6 +62,16 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
         lifecycleScope.launch(Dispatchers.IO) {
             videoInfo = if (intent.getStringExtra("data2") == null) viewModel.getVideoInfo()
                 else App.gson.fromJson(intent.getStringExtra("data2"), VideoInfo.Data::class.java)
+            // 缓存弹幕
+            val danmakuTemp = File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "tempDanmaku_${videoInfo.bvid}.xml")
+            if (danmakuTemp.exists()) {
+                danmakuTemp.delete()
+            }
+            danmakuTemp.createNewFile()
+            FileOutputStream(danmakuTemp).use { fos ->
+                fos.write(ApiService.getXmlDanmaku(videoInfo.cid))
+            }
+            val xmlDanmakuInput = danmakuTemp.inputStream()
             withContext(Dispatchers.Main) {
                 binding.vp2Video.adapter = StandardVPAdapter(supportFragmentManager, lifecycle, listOf("1", "2")) { _, i ->
                     when (i) {
@@ -79,29 +86,21 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                         1 -> tab.text = "评论"
                     }
                 }.attach()
-                binding.vv.setOnPreparedListener { toast("prepare") }
+                danmakuView.createParser(xmlDanmakuInput)
             }
             videoPlayData = viewModel.getVideoPlayData(cid = videoInfo.cid, bvid = videoInfo.bvid)
-                // 缓存视频
-                val videoTemp = File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), "${videoInfo.bvid}.flv")
-                if (!videoTemp.exists()) {
-                    // 没有缓存过 缓存
-                    toastConcurrent("缓存视频中...")
-                    videoTemp.createNewFile()
-                    FileOutputStream(videoTemp).use { fos ->
-                        client.newCall(
-                            Request.Builder()
-                                .url(videoPlayData.data.durl[0].url)
-                                .addHeader("referer", "https://www.bilibili.com/video/${videoInfo.bvid}")
-                                .build()
-                        ).execute().body!!.byteStream().use {
-                            fos.write(it.readBytes())
-                        }
-                    }
-                    toastConcurrent("缓存完成")
-                }
                 withContext(Dispatchers.Main) {
-                    binding.vv.setVideoPath(videoTemp.path)
+                    binding.vv.apply {
+                        setUrl(videoPlayData.data.durl[0].url, hashMapOf("referer" to "https://www.bilibili.com/video/${videoInfo.bvid}"
+                            , "User-Agent" to "Mozilla/5.0 BiliDroid/5.37.0 (bbcallen@gmail.com)"))
+                        setVideoController(
+                            StandardVideoController(this@VideoActivity).also {
+                                it.addDefaultControlComponent(videoInfo.title, false)
+                                it.addControlComponent(danmakuView)
+                            }
+                        )
+                        start()
+                    }
                 }
             // 观看历史相关逻辑
             val dao = AppDatabase.impl.getHistoryWatchDao()
@@ -113,10 +112,16 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
                 dao.update(videoInfo.bvid, System.currentTimeMillis())
             }
         }
-        binding.vv.apply {
-            // 添加播放控制条
-            setMediaController(MediaController(this@VideoActivity))
-        }
+        // 退出DialogFragment的回调
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object : FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+                if (App.enableDanmaku) {
+                    danmakuView.show()
+                } else {
+                    danmakuView.hide()
+                }
+            }
+        }, false)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -130,19 +135,37 @@ class VideoActivity : BaseVMActivity<VideoViewModel, ActivityVideoBinding>(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()
+            R.id.video_settings -> {
+                VideoSettingDialogFragment().show(supportFragmentManager, "巴拉巴拉")
+            }
         }
         return true
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        val rot = windowManager.defaultDisplay.rotation
-        if (rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270) {
-            normalLayoutParams = binding.rlVv.layoutParams
-            val layoutParams = CollapsingToolbarLayout.LayoutParams(CollapsingToolbarLayout.LayoutParams.MATCH_PARENT, CollapsingToolbarLayout.LayoutParams.MATCH_PARENT)
-            binding.rlVv.layoutParams = layoutParams
-        } else if (rot == Surface.ROTATION_0) {
-            binding.rlVv.layoutParams = normalLayoutParams
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.video_toolbar, menu)
+        return true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.vv.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.vv.resume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.vv.release()
+    }
+
+
+    override fun onBackPressed() {
+        if (!binding.vv.onBackPressed()) {
+            super.onBackPressed()
         }
     }
 

@@ -15,4 +15,14 @@
     <color name="colorSecondary">#29B6F6</color>
 
     <color name="textColorTitle">#FF000000</color>
+
+    <!-- 主色以及它的变种 -->
+    <color name="origin_shallow">#AAC1FF</color>
+    <color name="origin">#346DFF</color>
+    <color name="origin_deep">#1C55E7</color>
+
+    <!-- 辅色以及变种 -->
+    <color name="sub_shallow">#FFACC6</color>
+    <color name="sub">#FF4E67</color>
+    <color name="sub_deep">#FF256B</color>
 </resources>

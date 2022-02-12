@@ -14,11 +14,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.gson.reflect.TypeToken
 import kim.bifrost.rain.bilibili.App
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.lang.Exception
 import java.lang.StringBuilder
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.net.URL
 import java.security.MessageDigest
+import java.util.zip.Inflater
 import kotlin.random.Random
 
 /**
@@ -96,3 +101,33 @@ fun dynamicDrawableSpan(init: () -> Drawable) = object : DynamicDrawableSpan() {
  * @return
  */
 inline fun <reified T> Any.castToType(): T = App.gson.fromJson(App.gson.toJson(this), object : TypeToken<T>(){}.type)
+
+//解压deflate数据的函数
+private fun _decompress(data: ByteArray): ByteArray {
+    var output: ByteArray
+    val decompresser = Inflater(true)
+    decompresser.reset()
+    decompresser.setInput(data)
+    val o = ByteArrayOutputStream(data.size)
+    try {
+        val buf = ByteArray(1024)
+        while (!decompresser.finished()) {
+            val i = decompresser.inflate(buf)
+            o.write(buf, 0, i)
+        }
+        output = o.toByteArray()
+    } catch (e: Exception) {
+        output = data
+        e.printStackTrace()
+    } finally {
+        try {
+            o.close();
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+    decompresser.end()
+    return output
+}
+
+fun ByteArray.decompress() = kim.bifrost.rain.bilibili.utils._decompress(this)
