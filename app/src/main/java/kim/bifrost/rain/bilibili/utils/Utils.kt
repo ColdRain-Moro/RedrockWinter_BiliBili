@@ -130,4 +130,4 @@ private fun _decompress(data: ByteArray): ByteArray {
     return output
 }
 
-fun ByteArray.decompress() = kim.bifrost.rain.bilibili.utils._decompress(this)
+fun ByteArray.decompress() = _decompress(this)

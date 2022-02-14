@@ -12,6 +12,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import java.lang.reflect.*
 import java.net.URLEncoder
+import kotlin.coroutines.Continuation
 
 /**
  * kim.bifrost.rain.retrofit.internal.RetrofitProxyHandler
@@ -30,7 +31,6 @@ class RetrofitProxyHandler<T>(
         return Proxy.newProxyInstance(clazz.classLoader, arrayOf(clazz), this) as T
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun invoke(proxy: Any, method: Method, args: Array<out Any?>): Any? {
         val annotations = method.annotations
         val httpMethod = annotations.firstOrNull { it is GET || it is POST }
@@ -143,9 +143,8 @@ class RetrofitProxyHandler<T>(
     }
 
     // 判断方法是否是挂起函数
-    @RequiresApi(Build.VERSION_CODES.P)
     private fun isSuspendMethod(method: Method): Boolean {
-        val last = method.genericParameterTypes.lastOrNull() ?: return false
-        return last.typeName.startsWith("kotlin.coroutines.Continuation")
+        val last = method.parameterTypes.lastOrNull() ?: return false
+        return last == Continuation::class.java
     }
 }

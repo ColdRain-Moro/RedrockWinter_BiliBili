@@ -43,7 +43,7 @@ fun Long.toBvid(): String {
     av = (av xor xor) + add
     val re = "BV1  4 1 7  ".toCharArray()
     for (i in 0..5) {
-        re[s[i]] = table[(av / Math.pow(58.0, i.toDouble()).toInt() % 58).toInt()]
+        re[s[i]] = table[(av / 58.0.pow(i.toDouble()).toInt() % 58).toInt()]
     }
     return String(re)
 }

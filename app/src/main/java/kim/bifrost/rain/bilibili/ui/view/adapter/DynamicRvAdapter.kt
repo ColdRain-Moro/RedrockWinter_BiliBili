@@ -17,10 +17,17 @@ import kim.bifrost.rain.bilibili.ui.view.activity.RegionActivity
  * @since 2022/2/5 18:53
  **/
 class DynamicRvAdapter(private val data: RegionResponse, private val context: Context) : RecyclerView.Adapter<DynamicRvAdapter.Holder>() {
+
+    // 不支持的分区
+    private val regionUnsupported = arrayOf("直播", "广告", "放映厅", "小视频", "专栏", "音频", "相簿", "会员购", "游戏中心")
+
+    // 筛掉不支持的分区，防止点击闪退
+    private val datas by lazy { data.data.filterNot { regionUnsupported.contains(it.name) } }
+
     inner class Holder(val binding: ItemDynamicBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                val data = data.data[bindingAdapterPosition]
+                val data = datas[bindingAdapterPosition]
                 RegionActivity.start(context, data)
             }
         }
@@ -31,7 +38,7 @@ class DynamicRvAdapter(private val data: RegionResponse, private val context: Co
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val data = data.data[position]
+        val data = datas[position]
         holder.binding.apply {
             tv.text = data.name
             Glide.with(icon)
@@ -40,6 +47,6 @@ class DynamicRvAdapter(private val data: RegionResponse, private val context: Co
         }
     }
 
-    override fun getItemCount(): Int = data.data.size
+    override fun getItemCount(): Int = datas.size
 
 }

@@ -10,5 +10,4 @@ import androidx.lifecycle.ViewModel
  * @since 2022/2/5 19:47
  **/
 class RegionViewModel : ViewModel() {
-
 }
