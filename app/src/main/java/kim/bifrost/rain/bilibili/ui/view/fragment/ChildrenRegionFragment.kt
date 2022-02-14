@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import kim.bifrost.coldrain.wanandroid.base.BaseVMFragment
 import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.databinding.FragmentRegionChildrenBinding
+import kim.bifrost.rain.bilibili.model.web.ApiService
 import kim.bifrost.rain.bilibili.model.web.bean.RegionResponse
 import kim.bifrost.rain.bilibili.ui.view.adapter.ChildrenRegionRVAdapter
 import kim.bifrost.rain.bilibili.ui.viewmodel.frag.ChildrenRegionFragViewModel
+import kim.bifrost.rain.bilibili.utils.startVideoActivityByBvid
 import kim.bifrost.rain.bilibili.utils.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -32,7 +34,11 @@ class ChildrenRegionFragment : BaseVMFragment<ChildrenRegionFragViewModel, Fragm
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val adapter = ChildrenRegionRVAdapter(requireContext())
+            val adapter = ChildrenRegionRVAdapter(requireContext()) {
+                lifecycleScope.launch {
+                    startVideoActivityByBvid(requireContext(), it.bvid)
+                }
+            }
             withContext(Dispatchers.Main) {
                 binding.rvRegionChildren.apply {
                     layoutManager = GridLayoutManager(requireContext(), 2)
@@ -55,7 +61,7 @@ class ChildrenRegionFragment : BaseVMFragment<ChildrenRegionFragViewModel, Fragm
                     }
                 }
             }
-            viewModel.getDataFlow(data.reid).collectLatest {
+            viewModel.getDataFlow(data.tid).collectLatest {
                 adapter.submitData(it)
             }
         }

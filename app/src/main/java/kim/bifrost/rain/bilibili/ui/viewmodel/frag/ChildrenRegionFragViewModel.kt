@@ -23,7 +23,7 @@ class ChildrenRegionFragViewModel : ViewModel() {
         ),
         pagingSourceFactory = {
             BasePagingSource {
-                ApiService.regionLoadMore(rid = rid, pull = false).data.new
+                ApiService.getListData(rid = rid, pageNumber = it + 1).data.archives
             }
         }
     ).flow

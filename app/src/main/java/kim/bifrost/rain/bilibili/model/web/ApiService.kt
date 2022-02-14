@@ -391,12 +391,21 @@ interface ApiService {
      * @param rid 分区rid
      * @param ctime
      */
+    @Deprecated(
+        message = """
+            由于没有找到他指定返回个数的参数，所以只能返回固定的十个。而Paging在单页个数不够的情况下会主动加载多页。
+            这时传入的时间戳是一样的，我猜测他是采用了queryParams里的ctime作为seed取了一组随机数据，而seed相同的后果是返回的内容相同，导致了分区数据的重复。
+            为了更好的兼容Paging，使用web端接口 /x/web-interface/newlist
+        """,
+        replaceWith = ReplaceWith("getListData")
+    )
     @GET("https://app.bilibili.com/x/v2/region/dynamic/list")
     suspend fun regionLoadMore(
         @Query("build") build: Int = 5400000,
         @Query("pull") pull: Boolean = false,
         @Query("platform") platform: String = "android",
         @Query("rid") rid: Int,
+        @Query("ps") ps: Int = 30,
         @Query("ctime") ctime: Long = System.currentTimeMillis()
     ): RegionContentResponse
 
@@ -466,6 +475,26 @@ interface ApiService {
         @Query("mid") mid: Int,
         @Query("photo") photo: Boolean
     ): UserCardInfo
+
+    /**
+     * web端接口
+     * 分页获取指定分区的数据
+     * 该接口为浏览器抓包获取，有些参数不知道什么意思
+     *
+     * @param rid region ID
+     * @param type
+     * @param jsonp
+     * @param pageNumber 第几页，从1开始
+     * @param pageSize 每页数量
+     */
+    @GET("x/web-interface/newlist")
+    suspend fun getListData(
+        @Query("rid") rid: Int,
+        @Query("type") type: Int = 0,
+        @Query("jsonp") jsonp: String = "jsonp",
+        @Query("pn") pageNumber: Int,
+        @Query("ps") pageSize: Int = 20
+    ): PagerListBean
 
     companion object : ApiService by RetrofitHelper.service {
 

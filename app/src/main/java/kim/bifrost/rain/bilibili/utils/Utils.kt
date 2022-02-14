@@ -1,5 +1,6 @@
 package kim.bifrost.rain.bilibili.utils
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -8,20 +9,21 @@ import android.text.Spanned
 import android.text.style.DynamicDrawableSpan
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.MainThread
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.google.gson.reflect.TypeToken
 import kim.bifrost.rain.bilibili.App
+import kim.bifrost.rain.bilibili.model.web.ApiService
+import kim.bifrost.rain.bilibili.ui.view.activity.VideoActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InputStream
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.net.URL
 import java.security.MessageDigest
 import java.util.zip.Inflater
 import kotlin.random.Random
@@ -131,3 +133,14 @@ private fun _decompress(data: ByteArray): ByteArray {
 }
 
 fun ByteArray.decompress() = _decompress(this)
+
+@MainThread
+suspend fun startVideoActivityByBvid(
+    context: Context,
+    bvid: String
+) = coroutineScope {
+    val data = withContext(Dispatchers.IO) {
+        App.gson.toJson(ApiService.getVideoInfo(bvid = bvid).data)
+    }
+    VideoActivity.start(context, data)
+}

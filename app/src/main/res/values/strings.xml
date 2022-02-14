@@ -19,4 +19,5 @@
     <string name="enable_danmaku">是否启用弹幕</string>
     <string name="video_settings">视频设置</string>
     <string name="video_play_settings">视频播放设置</string>
+    <string name="logout">退出登录</string>
 </resources>

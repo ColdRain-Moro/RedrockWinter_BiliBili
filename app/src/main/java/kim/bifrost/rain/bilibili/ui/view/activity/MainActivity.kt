@@ -56,6 +56,7 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                             App.setToken(data.data?.access_token,
                                 data.data?.refresh_token,
                                 System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(data.data!!.expires_in.toLong()))
+                            flushLoginState()
                         }
                         else -> {
                             toastConcurrent(data.message)
@@ -64,7 +65,7 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                 }
         }
 
-    @SuppressLint("UseCompatLoadingForDrawables", "SetTextI18n")
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.vp2Main.apply {
@@ -112,6 +113,13 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                     // 稍后再看
                     R.id.nav_next_watch -> needLogin {
                         // TODO
+                    }
+                    R.id.nav_logout -> {
+                        if (UserManager.isLogged) {
+                            UserManager.logout()
+                            flushLoginState()
+                            toast("登出成功")
+                        }
                     }
                 }
                 binding.drawerLayout.closeDrawers()
@@ -171,6 +179,33 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                 }
             }
         }
+        flushLoginState()
+    }
+
+    // 请求登录
+    private suspend fun requestLogin() {
+        viewModel.requestQRCode().data?.let {
+            requestData = it
+            startForResult.launch(
+                Intent(this, WebPageActivity::class.java)
+                    .putExtra("title", "登录")
+                    .putExtra("url", it.url)
+            )
+        }
+    }
+
+    // 需要登录才能执行的操作
+    private fun needLogin(func: () -> Unit) {
+        if (UserManager.isLogged) {
+            func()
+        } else {
+            lifecycleScope.launch(Dispatchers.IO) { requestLogin() }
+        }
+    }
+
+    // 刷新登录状态
+    @SuppressLint("SetTextI18n")
+    private fun flushLoginState() {
         // 若已经登录开协程请求登录数据
         if (UserManager.isLogged) {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -211,28 +246,32 @@ class MainActivity : BaseVMActivity<MainViewModel, ActivityMainBinding>(
                     }
                 }
             }
-        }
-
-    }
-
-    // 请求登录
-    private suspend fun requestLogin() {
-        viewModel.requestQRCode().data?.let {
-            requestData = it
-            startForResult.launch(
-                Intent(this, WebPageActivity::class.java)
-                    .putExtra("title", "登录")
-                    .putExtra("url", it.url)
-            )
-        }
-    }
-
-    // 需要登录才能执行的操作
-    private fun needLogin(func: () -> Unit) {
-        if (UserManager.isLogged) {
-            func()
         } else {
-            lifecycleScope.launch(Dispatchers.IO) { requestLogin() }
+            Glide.with(binding.userIcon)
+                .load(R.drawable.noface)
+                .into(binding.userIcon)
+            binding.navView.getHeaderView(0).apply {
+                findViewById<ShapeableImageView>(R.id.iv_user).apply {
+                    Glide.with(this)
+                        .load(R.drawable.noface)
+                        .into(this)
+                }
+                findViewById<ImageView>(R.id.iv_drawer_background).apply {
+                    Glide.with(this)
+                        .load(R.drawable.bili_drawerbg_logined)
+                        .into(this)
+                }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val span = buildSpannedString {
+                        append("未登录")
+                    }
+                    withContext(Dispatchers.Main) {
+                        findViewById<TextView>(R.id.tv_user_name).text = span
+                    }
+                }
+                findViewById<TextView>(R.id.tv_user_info).text =
+                    "登录体验更多功能"
+            }
         }
     }
 }
