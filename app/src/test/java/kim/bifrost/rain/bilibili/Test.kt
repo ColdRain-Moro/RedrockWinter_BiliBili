@@ -14,5 +14,6 @@ import okhttp3.Request
  * @since 2022/1/22 0:13
  **/
 suspend fun main() {
-    val data = ApiService.regionLoadMore(rid = 26)
+    val data = ApiService.homePage()
+    println(data)
 }

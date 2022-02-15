@@ -127,9 +127,15 @@
 
 后来百度了才知道，是要加上referer表头才能拿到视频流的 (referer的内容就是这个视频的bilibili网页播放地址)
 
-### NestedScrollView & RecyclerView & CoordinatorLayout
+### NestedScrollView & RecyclerView 嵌套滑动导致懒加载失效
 
-非常鬼畜的问题，NestedScrollView使RecyclerView的懒加载失效。我已经描述不出来是什么问题了，真给我整麻了。
+参考了 [NestedScrollView与RecyclerView的嵌套使用](https://juejin.cn/post/6844903583406620680)
+
+>要实现效果的话：
+>
+>1 当banner在顶部的时候 不管手指在哪滑动，都是NestedScrollView滑动
+>
+>2 当banner已经划过顶部的时候，手指在RecyclerView中滑动的时候，是RecyclerView滑动
 
 ### 观看历史
 

@@ -496,6 +496,19 @@ interface ApiService {
         @Query("ps") pageSize: Int = 20
     ): PagerListBean
 
+    /**
+     * 获取视频tags
+     *
+     * @param aid
+     * @param bvid
+     * @return
+     */
+    @GET("x/tag/archive/tags")
+    suspend fun getVideoTags(
+        @Query("aid") aid: Int? = null,
+        @Query("bvid") bvid: String? = null
+    ): VideoTagsResponse
+
     companion object : ApiService by RetrofitHelper.service {
 
         private val client by lazy { OkHttpClient.Builder().build() }

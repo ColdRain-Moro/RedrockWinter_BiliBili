@@ -95,7 +95,7 @@ class TagLayout(context: Context, attrs: AttributeSet) : ViewGroup(context, attr
             //当一行放不下的时候需要换行
             if (lineWidth + childWidth > sizeWidth) {
                 //换行
-                width = Math.max(lineWidth, width)
+                width = lineWidth.coerceAtLeast(width)
                 lineWidth = childWidth
                 height += lineHeight
                 lineHeight = childHeight
@@ -132,9 +132,13 @@ class TagLayout(context: Context, attrs: AttributeSet) : ViewGroup(context, attr
     ) {
         addView(TextView(context).apply {
             setPadding(30)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16F)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11F)
             this.text = text
-            layoutParams = (this@TagLayout.layoutParams as MarginLayoutParams).apply { setMargins(15, 10, 15, 10) }
+            layoutParams = (this@TagLayout.layoutParams as MarginLayoutParams).apply {
+                setMargins(15, 10, 15, 10)
+                width = LayoutParams.WRAP_CONTENT
+                height = LayoutParams.WRAP_CONTENT
+            }
             setBackgroundColor(Color.parseColor("#CBEDEDED"))
             setTextColor(color)
             setOnClickListener(onClick)

@@ -19,4 +19,5 @@ class VideoIntroduceFragViewModel : ViewModel() {
     suspend fun allLike(aid: Int) = ApiService.allLike(aid = aid)
     suspend fun hasCollected(aid: Int) = ApiService.isCollect(aid = aid).data.favoured
     suspend fun getUserInfo(mid: Int) = ApiService.getUserCard(mid, false).data
+    suspend fun getTags(aid: Int) = ApiService.getVideoTags(aid = aid)
 }

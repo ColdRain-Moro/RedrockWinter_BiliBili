@@ -49,6 +49,7 @@ class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, Fragm
             lifecycleScope.launch(Dispatchers.IO) {
                 val list = viewModel.getVideoRecommends(data.bvid).data
                 val authorInfo = viewModel.getUserInfo(data.owner.mid)
+                val tags = viewModel.getTags(data.aid)
                 withContext(Dispatchers.Main) {
                     rvVideosRecommend.apply {
                         layoutManager = LinearLayoutManager(requireContext())
@@ -111,7 +112,7 @@ class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, Fragm
                                 }
                                 true
                             }
-                            requireLogin {
+                            if (UserManager.isLogged) {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     if (viewModel.hasThumpsUp(data.aid)) {
                                         withContext(Dispatchers.Main) {
@@ -128,6 +129,11 @@ class VideoIntroduceFragment : BaseVMFragment<VideoIntroduceFragViewModel, Fragm
                                             btnCollect.setColorFilter(0xF06292)
                                         }
                                     }
+                                }
+                            }
+                            if (tags.code == 0) {
+                                tags.data.forEach { tag ->
+                                    tlTag.addTag(requireContext(), tag.tag_name, Color.GRAY)
                                 }
                             }
                         }

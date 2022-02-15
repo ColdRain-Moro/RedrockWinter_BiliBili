@@ -8,14 +8,17 @@ import androidx.core.content.edit
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import kim.bifrost.coldrain.wanandroid.base.BaseVMFragment
 import kim.bifrost.rain.bilibili.App
 import kim.bifrost.rain.bilibili.databinding.FragmentHomePageBinding
 import kim.bifrost.rain.bilibili.ui.view.activity.SearchResultActivity
+import kim.bifrost.rain.bilibili.ui.view.adapter.BannerAdapter
 import kim.bifrost.rain.bilibili.ui.view.adapter.MainRvPagingAdapter
 import kim.bifrost.rain.bilibili.ui.viewmodel.frag.HomePageFragViewModel
 import kim.bifrost.rain.bilibili.utils.toast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -30,9 +33,42 @@ class HomePageFragment : BaseVMFragment<HomePageFragViewModel, FragmentHomePageB
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = MainRvPagingAdapter(requireActivity())
+        // 轮播图回调
+        val adapter = MainRvPagingAdapter(requireActivity()) {
+            val vpLooper = object : Runnable {
+                override fun run() {
+                    // 控制滑动速度
+                    lifecycleScope.launch {
+                        if (vpBanner.scrollState == ViewPager2.SCROLL_STATE_IDLE) {
+                            vpBanner.beginFakeDrag()
+                            for (i in 1..40) {
+                                delay(15)
+                                vpBanner.fakeDragBy(-vpBanner.width.toFloat() / 40)
+                            }
+                            vpBanner.endFakeDrag()
+                        }
+                    }
+                    vpBanner.postDelayed(this, 5000)
+                }
+            }
+            vpBanner.apply {
+                adapter = BannerAdapter(requireContext())
+                if (!isFakeDragging) {
+                    currentItem = 4000
+                }
+                postDelayed(vpLooper, 5000)
+            }
+        }
         binding.rvHome.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = GridLayoutManager(requireContext(), 2).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int
+                        = when (position) {
+                            0 -> 2
+                            else -> 1
+                        }
+                }
+            }
             this.adapter = adapter
         }
         lifecycleScope.launch(Dispatchers.IO) {
