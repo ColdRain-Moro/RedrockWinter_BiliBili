@@ -30,8 +30,6 @@ class MainRvPagingAdapter(private val activity: Activity, private val onBannerIn
     BaseItemCallBack { a, b -> a.param == b.param }
 ) {
 
-    private lateinit var headerItem: ItemBannerBinding
-
     override fun getDataBinding(parent: ViewGroup, viewType: Int): ViewBinding {
         if (viewType == 0) return ItemBannerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ItemRecommendBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -59,7 +57,7 @@ class MainRvPagingAdapter(private val activity: Activity, private val onBannerIn
     override val holderInit: Holder<ViewBinding>.() -> Unit
         get() = {
             binding.root.setOnClickListener {
-                if (getItemViewType(absoluteAdapterPosition) == 0) {
+                if (getItemViewType(absoluteAdapterPosition) == 1) {
                     val data = getItem(absoluteAdapterPosition)!!
                     val json = "{ \"bvid\": ${parseBVidFromParam(data.param, data.goto)} }"
                     VideoActivity.start(
